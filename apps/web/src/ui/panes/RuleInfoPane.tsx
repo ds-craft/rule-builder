@@ -32,7 +32,3 @@ export function RuleInfoPane({ doc, note }: { doc: RuleDoc; note?: string }) {
     </>
   );
 }
-
-export function NotReadyPane() {
-  return <p className="muted">この機能は準備中です。</p>;
-}

@@ -18,7 +18,8 @@ import { Menu, type MenuItem } from '../common/Menu.tsx';
 import { changesKey } from '../../editor/changes.ts';
 import { staleEntries } from '../../state/actions.ts';
 import { OP_TAG } from '../file/InfoPage.tsx';
-import { NotReadyPane } from '../panes/RuleInfoPane.tsx';
+import { CheckPane } from '../panes/CheckPane.tsx';
+import { RefsPane } from '../panes/RefsPane.tsx';
 import { RuleMetaForm } from '../panes/RuleMetaForm.tsx';
 import { NavigationPane } from './NavigationPane.tsx';
 import { Ribbon } from './Ribbon.tsx';
@@ -288,7 +289,13 @@ function Editor({ index }: { index: number }) {
         </div>
         {ui.pane && (
           <TaskPane title={PANE_TITLES[ui.pane]} onClose={() => setUi({ pane: null })}>
-            {ui.pane === 'info' ? <RuleMetaForm entry={entry} /> : <NotReadyPane />}
+            {ui.pane === 'info' ? (
+              <RuleMetaForm entry={entry} />
+            ) : ui.pane === 'check' ? (
+              <CheckPane ctx={ctx} />
+            ) : (
+              <RefsPane ctx={ctx} />
+            )}
           </TaskPane>
         )}
         <StatusBar

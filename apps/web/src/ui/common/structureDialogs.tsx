@@ -10,7 +10,9 @@ import {
   type ArticleNum,
   type Renumbering,
 } from '@rule-builder/core';
+import type { Node as PMNode } from '@tiptap/pm/model';
 import type { Transaction } from '@tiptap/pm/state';
+import type { Mappable } from '@tiptap/pm/transform';
 import { useState, type ReactNode } from 'react';
 import { create } from 'zustand';
 import type { CommandContext } from '../../commands/types.ts';
@@ -25,6 +27,8 @@ import {
   undeleteArticle,
   type ArticleRef,
 } from '../../editor/structure.ts';
+import { entryRuleId } from '../../github/linkIndex.ts';
+import { recordRenumbering, refItems } from '../../editor/refs.ts';
 import { openDialog } from './dialogs.tsx';
 
 /** 構造の変更を1回の「元に戻す」として反映し、番号の対応表を記録する */
@@ -34,8 +38,35 @@ function apply(ctx: CommandContext, tr: Transaction, renumbered: Renumbering[] =
   ctx.entry?.undo.stopCapturing();
   editor.view.dispatch(tr);
   ctx.entry?.undo.stopCapturing();
-  if (ctx.entry) ctx.app.logRenumbering(ctx.entry.key, renumbered);
+  recordRefs(ctx, tr.before, tr.mapping, renumbered);
   editor.commands.focus();
+}
+
+/**
+ * 番号の対応表を記録し、参照の確認の候補を作る（7-3）。候補が増えたら「参照の確認」を開く。
+ * @param oldDoc 操作の前の文書 @param mapping 操作の前から今への位置の対応
+ */
+function recordRefs(
+  ctx: CommandContext,
+  oldDoc: PMNode,
+  mapping: Mappable,
+  renumbered: readonly Renumbering[],
+) {
+  const editor = ctx.editor;
+  if (!editor || !ctx.entry) return;
+  ctx.app.logRenumbering(ctx.entry.key, [...renumbered]);
+  const before = refItems(editor.state).length;
+  editor.view.dispatch(
+    recordRenumbering(editor.state, {
+      oldDoc,
+      mapping,
+      list: renumbered,
+      ruleId: entryRuleId(ctx.entry),
+    }),
+  );
+  if (refItems(editor.state).length > before) {
+    ctx.app.setUi(ctx.isMobile ? { pane: 'refs', nav: false } : { pane: 'refs' });
+  }
 }
 
 function Choice({
@@ -245,6 +276,8 @@ export function moveCurrentArticle(ctx: CommandContext, dir: -1 | 1) {
   const r = moveArticle(editor.state, ref, dir);
   if ('error' in r) return ctx.app.showToast(r.error);
   const undo = ctx.entry?.undo;
+  const oldDoc = r.tr.before;
+  const mapping = r.tr.mapping;
   if (r.crossed === 'division') {
     // 章・節の境目を越えるときは番号を変えない
     apply(ctx, r.tr);
@@ -255,11 +288,12 @@ export function moveCurrentArticle(ctx: CommandContext, dir: -1 | 1) {
   editor.view.dispatch(r.tr);
   const timeout = undo?.captureTimeout;
   if (undo) undo.captureTimeout = Number.MAX_SAFE_INTEGER;
-  const finish = () => {
+  const finish = (swapped: Renumbering[] = []) => {
     if (undo) {
       undo.captureTimeout = timeout!;
       undo.stopCapturing();
     }
+    recordRefs(ctx, oldDoc, mapping, swapped);
     editor.commands.focus();
   };
   const a = ref.node.attrs.num as ArticleNum | null;
@@ -295,16 +329,16 @@ export function moveCurrentArticle(ctx: CommandContext, dir: -1 | 1) {
         label: 'OK',
         primary: true,
         run: () => {
+          let swap: Renumbering[] = [];
           if (choice.value === 'swap') {
             // 移動後の並びで、動かした条と相手の条の番号を入れ替える
             // 動かした条にはカーソルがあり、相手の条はその後ろ（上へ）か前（下へ）にある
             const nums = articleNums(editor.state.doc);
             const ia = currentArticle(editor.state)?.index ?? -1;
-            const swap = planSwap(nums, ia, ia - dir);
+            swap = planSwap(nums, ia, ia - dir);
             editor.view.dispatch(renumberArticles(editor.state, swap));
-            if (ctx.entry) ctx.app.logRenumbering(ctx.entry.key, swap);
           }
-          finish();
+          finish(swap);
         },
       },
     ],

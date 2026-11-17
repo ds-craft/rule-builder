@@ -4,6 +4,7 @@
 import {
   commitInfo,
   exportProposal,
+  lintRule,
   formatRuleId,
   gitCommitCommand,
   pendingFiles,
@@ -17,6 +18,8 @@ import { downloadBlob } from '../../state/actions.ts';
 import { useApp } from '../../state/store.ts';
 import { copyText } from '../common/dialogs.tsx';
 import { changedCount } from './InfoPage.tsx';
+import { docAnchors } from '../../editor/checks.ts';
+import { entryRuleId, lintRuleIndex, useLinkIndex } from '../../github/linkIndex.ts';
 
 /** 今日（日本時間）の ISO 形式の日付 */
 function todayIso(now = new Date()): string {
@@ -38,6 +41,20 @@ export function ExportPage() {
   const command = gitCommitCommand(info, ex);
   const future = !!proposal.enforcementDate && proposal.enforcementDate > todayIso();
   const [withPending, setWithPending] = useState(false);
+  // 書式チェックのエラーの件数（6-1.4）
+  const linkIndex = useLinkIndex();
+  const index = lintRuleIndex(linkIndex.status === 'ready' ? linkIndex.rules : null, entries, (e) =>
+    docAnchors(e.doc),
+  );
+  const lintErrors = entries
+    .filter((e) => e.op !== 'repeal')
+    .reduce(
+      (n, e) =>
+        n +
+        lintRule(e.doc, { ruleId: entryRuleId(e), rules: index }).filter((i) => i.level === 'error')
+          .length,
+      0,
+    );
 
   const status = (entryId: string) => {
     const e = entries.find((x) => x.key === entryId);
@@ -69,6 +86,12 @@ export function ExportPage() {
         <div className="issue warn" style={{ maxWidth: 720 }}>
           <span className="lv">注意</span>施行日が決まっていません。「
           <Link to="/file/info">情報</Link>」で入力してください。
+        </div>
+      )}
+      {lintErrors > 0 && (
+        <div className="issue error" style={{ maxWidth: 720 }}>
+          <span className="lv">エラー</span>書式チェックのエラーが{lintErrors}
+          件あります。書き出しはできますが、ポータルで表示が崩れるおそれがあります。
         </div>
       )}
       <div className="export-opts">

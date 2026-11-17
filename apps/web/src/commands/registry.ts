@@ -26,6 +26,7 @@ import {
   SpellCheck,
   Trash2,
   Undo2,
+  Unlink,
   Users,
 } from 'lucide-react';
 import {
@@ -56,9 +57,14 @@ import {
 import { downloadDraft } from '../state/actions.ts';
 import { ZOOM_MAX, ZOOM_MIN } from '../state/store.ts';
 import { openMarkdownDialog } from '../ui/common/dialogs.tsx';
+import {
+  linkTarget,
+  openLinkDialog,
+  removeLinkAtCursor,
+  linkRangeAt,
+} from '../ui/common/linkDialog.tsx';
+import { checkCounts } from '../editor/checks.ts';
 import type { Command, CommandContext } from './types.ts';
-
-const never = () => false;
 
 /** 構造の変更（1回の「元に戻す」で戻る） */
 const structural = (f: (s: EditorState) => Transaction) => (ctx: CommandContext) => {
@@ -237,8 +243,21 @@ const list: Command[] = [
     enabled: (ctx) => !!ctx.editor,
     run: structural(addSupplementaryLine),
   },
-  // 条文へのリンク（Phase 7）
-  { id: 'link', label: '条文へのリンク', icon: Link, shortcut: 'Ctrl+K', enabled: never, run() {} },
+  {
+    id: 'link',
+    label: '条文へのリンク',
+    icon: Link,
+    shortcut: 'Ctrl+K',
+    enabled: (ctx) => !!ctx.editor && !!linkTarget(ctx.editor.state),
+    run: openLinkDialog,
+  },
+  {
+    id: 'unlink',
+    label: 'リンクを解除',
+    icon: Unlink,
+    enabled: (ctx) => !!ctx.editor && !!linkRangeAt(ctx.editor.state),
+    run: removeLinkAtCursor,
+  },
 
   // ---- 条のツール ----
   {
@@ -282,6 +301,10 @@ const list: Command[] = [
   {
     id: 'pane-check',
     label: '書式チェック',
+    labelFor: () => {
+      const n = checkCounts().lint;
+      return n ? `書式チェック（${n}）` : '書式チェック';
+    },
     icon: SpellCheck,
     enabled: (ctx) => !!ctx.entry,
     pressed: (ctx) => ctx.app.ui.pane === 'check',
@@ -290,6 +313,10 @@ const list: Command[] = [
   {
     id: 'pane-refs',
     label: '参照の確認',
+    labelFor: () => {
+      const n = checkCounts().refs;
+      return n ? `参照の確認（${n}）` : '参照の確認';
+    },
     icon: ArrowLeftRight,
     enabled: (ctx) => !!ctx.entry,
     pressed: (ctx) => ctx.app.ui.pane === 'refs',
@@ -427,6 +454,10 @@ export function isEnabled(c: Command, ctx: CommandContext): boolean {
 }
 
 /** ツールチップ（「元に戻す（Ctrl+Z）」）。 */
+export function commandLabel(c: Command, ctx: CommandContext): string {
+  return c.labelFor ? c.labelFor(ctx) : c.label;
+}
+
 export function commandTip(c: Command): string {
   return (c.tip ?? c.label) + (c.shortcut ? `（${c.shortcut}）` : '');
 }

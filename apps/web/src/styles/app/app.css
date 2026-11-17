@@ -940,6 +940,32 @@ pre.code {
   width: 16px;
   height: 16px;
 }
+.link-bubble {
+  align-items: center;
+  max-width: min(480px, calc(100vw - 16px));
+  font-size: 12.5px;
+}
+.link-bubble button {
+  white-space: nowrap;
+  flex: none;
+}
+.link-bubble .where {
+  padding: 0 6px;
+  color: var(--g600);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+.link-bubble a {
+  display: inline-flex;
+  padding: 3px 6px;
+  color: var(--blue);
+}
+.check-opt {
+  display: block;
+  margin-top: 8px;
+}
 
 /* ---- ファイル（Backstage） ---- */
 .backstage {

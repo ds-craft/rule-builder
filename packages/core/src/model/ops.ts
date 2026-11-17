@@ -138,21 +138,28 @@ export function checkRenumber(nums: ArticleNums, index: number, to: ArticleNum):
 }
 
 /** 条番号の欠番・重複・順序の乱れ（書式チェックで使う） */
-export function numberingIssues(nums: ArticleNums): { index: number; message: string }[] {
-  const out: { index: number; message: string }[] = [];
+export type NumberingIssue = {
+  index: number;
+  kind: 'duplicate' | 'gap' | 'order';
+  message: string;
+};
+
+export function numberingIssues(nums: ArticleNums): NumberingIssue[] {
+  const out: NumberingIssue[] = [];
   const seen = new Set<string>();
   let prev: ArticleNum | null = null;
   nums.forEach((n, index) => {
     if (!n) return;
     const label = formatArticleNum(n);
-    if (seen.has(label)) out.push({ index, message: `${label}が2つあります` });
+    if (seen.has(label)) out.push({ index, kind: 'duplicate', message: `${label}が2つあります` });
     seen.add(label);
     if (prev && n.branches.length === 0 && prev.main + 1 < n.main) {
-      out.push({ index, message: `第${prev.main + 1}条がありません（欠番）` });
+      out.push({ index, kind: 'gap', message: `第${prev.main + 1}条がありません（欠番）` });
     }
     if (prev && compareArticleNum(prev, n) > 0) {
       out.push({
         index,
+        kind: 'order',
         message: `${label}が${formatArticleNum(prev)}の後にあります（順番が前後しています）`,
       });
     }

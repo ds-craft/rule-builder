@@ -3,7 +3,7 @@
 
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router';
-import { commandTip, getCommand, isEnabled } from '../../commands/registry.ts';
+import { commandLabel, commandTip, getCommand, isEnabled } from '../../commands/registry.ts';
 import type { CommandContext } from '../../commands/types.ts';
 import { useCommandContext } from '../../commands/useCommandContext.ts';
 import type { RibbonTab } from '../../state/store.ts';
@@ -86,7 +86,7 @@ function RibbonButton({ btn, ctx }: { btn: Btn; ctx: CommandContext }) {
       onClick={() => c.run(ctx)}
     >
       <Icon icon={c.icon} />
-      <span>{btn.label ?? c.label}</span>
+      <span>{btn.label ?? commandLabel(c, ctx)}</span>
     </button>
   );
 }

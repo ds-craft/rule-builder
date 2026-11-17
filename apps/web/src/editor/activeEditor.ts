@@ -19,4 +19,5 @@ export function bumpEditorVersion() {
 /** エディタのキー操作から画面の操作を呼ぶための受け口（Ctrl+Enter で条の挿入ダイアログなど） */
 export const editorHandlers = {
   insertArticle: () => {},
+  link: () => {},
 };

@@ -2,7 +2,7 @@
 // 実際の反映は呼び出し側が dispatch する（キー操作・リボン・右クリックで共通）。
 
 import type { ArticleNum } from '@rule-builder/core';
-import type { Fragment, Node as PMNode } from '@tiptap/pm/model';
+import type { Fragment, Node as PMNode, ResolvedPos } from '@tiptap/pm/model';
 import { TextSelection, type EditorState, type Transaction } from '@tiptap/pm/state';
 import { articleLineInfos, lineKindsOf, locationLabel, type LineInfo } from './lines.ts';
 import type { LineKind } from './schema.ts';
@@ -22,7 +22,11 @@ export type ArticleCursor = {
 
 /** カーソルのある条と行。条の外なら null */
 export function articleCursor(state: EditorState): ArticleCursor | null {
-  const $from = state.selection.$from;
+  return articleCursorAt(state.selection.$from);
+}
+
+/** 位置のある条と行。条の外なら null */
+export function articleCursorAt($from: ResolvedPos): ArticleCursor | null {
   if ($from.depth < 1) return null;
   const article = $from.node(1);
   if (article.type.name !== 'article') return null;
@@ -44,8 +48,12 @@ export function currentLineKind(state: EditorState): LineKind | null {
 
 /** ステータスバーの位置の表示 */
 export function cursorLocation(state: EditorState): string {
-  const c = articleCursor(state);
-  const $from = state.selection.$from;
+  return locationAt(state.selection.$from);
+}
+
+/** 位置の表示（「第2条 第3項」「前文」） */
+export function locationAt($from: ResolvedPos): string {
+  const c = articleCursorAt($from);
   if (!c) {
     const top = $from.depth >= 1 ? $from.node(1).type.name : '';
     return (

@@ -18,6 +18,8 @@ export type IconSpec = LucideIcon | string;
 export type Command = {
   id: string;
   label: string;
+  /** 状態で変わる表示名（「書式チェック（3）」など。無ければ label） */
+  labelFor?: (ctx: CommandContext) => string;
   icon: IconSpec;
   /** ツールチップ（無ければ label） */
   tip?: string;

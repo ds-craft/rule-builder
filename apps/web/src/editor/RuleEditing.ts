@@ -12,6 +12,8 @@ import {
   promote,
   type Result,
 } from './commands.ts';
+import { fullwidthPlugin, lintPlugin, type LintContext } from './lint.ts';
+import { refsPlugin } from './refs.ts';
 import {
   currentLinePlugin,
   normalizePlugin,
@@ -25,8 +27,14 @@ export type RuleEditingOptions = {
   getUndoManager: () => UndoManager | null;
   /** Ctrl+Enter（後に条を挿入） */
   onInsertArticle: () => void;
+  /** Ctrl+K（条文へのリンク） */
+  onLink: () => void;
   /** 改正前の条の中身（変更箇所の表示に使う。新規制定では null） */
   baseSignatures: string[] | null;
+  /** 書式チェックに使う情報（このルールのID・ほかのルールの一覧） */
+  lintContext: () => LintContext;
+  /** 入力した記号をその場で全角にするか */
+  autoFullwidth: () => boolean;
 };
 
 /** 構造の変更は「元に戻す」の1回分として区切る */
@@ -55,7 +63,10 @@ export const RuleEditing = Extension.create<RuleEditingOptions>({
       notify: () => {},
       getUndoManager: () => null,
       onInsertArticle: () => {},
+      onLink: () => {},
       baseSignatures: null,
+      lintContext: () => ({ ruleId: '' }),
+      autoFullwidth: () => true,
     };
   },
 
@@ -69,6 +80,9 @@ export const RuleEditing = Extension.create<RuleEditingOptions>({
       changesPlugin(this.options.baseSignatures),
       normalizePlugin(),
       undoBoundaryPlugin(getUndo),
+      lintPlugin(this.options.lintContext),
+      refsPlugin(),
+      fullwidthPlugin(this.options.autoFullwidth),
       // 貼り付けは書式を落とす。複数行は行頭の番号から項・号・細分に分ける
       pastePlugin(editor, notify, getUndo),
     ];
@@ -90,6 +104,10 @@ export const RuleEditing = Extension.create<RuleEditingOptions>({
       Backspace: run(backspaceAtLineStart),
       'Mod-Enter': () => {
         this.options.onInsertArticle();
+        return true;
+      },
+      'Mod-k': () => {
+        this.options.onLink();
         return true;
       },
     };

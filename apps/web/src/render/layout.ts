@@ -12,6 +12,7 @@ import {
   inlineText,
   lineKind,
   parseInline,
+  portalAnchor,
   serializeInline,
   type Article,
   type DivisionChild,
@@ -59,9 +60,7 @@ export type LawSection = {
   lines: LawLine[];
 };
 
-export function portalAnchor(text: string): string {
-  return text.trim().replace(/\s+/g, '-');
-}
+export { portalAnchor };
 
 type Builder = { sections: LawSection[]; count: number };
 
