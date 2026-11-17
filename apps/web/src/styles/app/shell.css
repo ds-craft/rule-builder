@@ -76,20 +76,46 @@
 .rb-editor .article.is-deleted h5 .caption-text {
   display: none;
 }
-.rb-editor .no {
-  user-select: none;
+/* 番号・案内表示・「）」・「一般向け」（plugins.ts の data-no・data-ph）。
+   日本語変換と干渉しないよう、行の中に要素を置かずに ::before・::after で描く */
+.rb-editor [data-no]::before {
+  content: attr(data-no);
 }
-.rb-editor .paren-close {
-  margin-left: 0;
-}
-.rb-editor .ph {
+/* 空の行の案内表示。幅を取らない絶対配置にして、行の中身の先頭（カーソルの位置）に重ねる。
+   空の行の改行（ProseMirror-trailingBreak）は残す（隠すとカーソルが行の先頭に描かれる） */
+.rb-editor [data-ph] .lt::before {
+  content: var(--ph);
+  position: absolute;
+  white-space: nowrap;
+  text-indent: 0;
   color: var(--g420);
   background: var(--g50);
   border-radius: 2px;
   padding: 0 4px;
   pointer-events: none;
-  user-select: none;
   font-weight: 400;
+}
+/* 見出しが空のときは、案内表示の分の幅を空けて「）」を後ろに置く */
+.rb-editor .caption[data-ph] .caption-text {
+  display: inline-block;
+  min-width: calc(6em + 8px);
+}
+.rb-editor .article:not(.is-deleted) > h5 .caption-wrap::after {
+  content: '）';
+}
+.rb-editor .article[data-general]:not(.is-deleted) > h5::after {
+  content: '一般向け';
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--blue-900);
+  border: 1px solid var(--blue);
+  border-radius: 10px;
+  padding: 0 8px;
+  margin-left: 8px;
+  vertical-align: 2px;
+  white-space: nowrap;
 }
 .rb-editor .raw-line {
   font-family: ui-monospace, Consolas, monospace;
@@ -101,18 +127,6 @@
 }
 .rb-editor p.law-line {
   position: relative;
-}
-.rb-editor .genmark {
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--blue-900);
-  border: 1px solid var(--blue);
-  border-radius: 10px;
-  padding: 0 8px;
-  margin-left: 8px;
-  vertical-align: 2px;
-  white-space: nowrap;
-  user-select: none;
 }
 .rb-editor .ProseMirror-selectednode {
   outline: 2px solid var(--blue-100);
@@ -168,7 +182,12 @@
   .cmp-rule {
     break-inside: auto;
   }
-  .cmp-table tbody {
+  /* スクロールできる要素は印刷でページをまたいで分けられず、表がまるごと次のページへ送られるので外す */
+  .cmp-table {
+    overflow: visible;
+  }
+  /* 条（tbody）ごとにまとめると、長い条が1ページ目に収まらず表が2ページ目から始まるので、行の途中でだけ分けない */
+  .cmp-table tr {
     break-inside: avoid;
   }
 }

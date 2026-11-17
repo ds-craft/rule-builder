@@ -16,27 +16,28 @@ const PLACEHOLDER: Record<string, string> = {
   saibun: 'ここに号の細分を入力',
 };
 
-function span(cls: string, text: string): HTMLElement {
-  const el = document.createElement('span');
-  el.className = cls;
-  el.contentEditable = 'false';
-  el.textContent = text;
-  return el;
+// 番号・案内表示・「）」・「一般向け」は、行の中に要素（ウィジェット）を置かず、行の属性（data-no・data-ph）と
+// CSS の ::before・::after で描く（shell.css）。行の中に編集できない要素があると、日本語変換と干渉する。
+//   - 空の行の案内表示を出し入れすると、変換の始まりで1文字目が二重に入る（Chrome・Brave の Microsoft IME）
+//   - 行頭の番号の要素の隣で変換中の文字をすべて消すと、カーソルが外れる（Android の Gboard）
+// 属性の付け替えは行の要素の書き換えだけで済み、変換中の文字の DOM には触れない。
+
+type Attrs = Record<string, string>;
+
+const line = (pos: number, node: PMNode, attrs: Attrs) =>
+  Decoration.node(pos, pos + node.nodeSize, attrs);
+
+/** 番号（行頭）と、空の行の案内表示 */
+function marks(node: PMNode, no: string, ph: string): Attrs {
+  const attrs: Attrs = {};
+  if (no) attrs['data-no'] = no;
+  if (ph && node.content.size === 0) {
+    attrs['data-ph'] = ph;
+    // 案内表示は行の中の入れ物（.lt）の ::before で描くので、文言は CSS の変数で渡す
+    attrs.style = `--ph: "${ph}"`;
+  }
+  return attrs;
 }
-
-const widget = (pos: number, cls: string, text: string, side = -1) =>
-  Decoration.widget(pos, () => span(cls, text), {
-    side,
-    key: `${cls}:${text}`,
-    ignoreSelection: true,
-  });
-
-const placeholder = (pos: number, text: string) =>
-  Decoration.widget(pos, () => span('ph', text), {
-    side: 1,
-    key: `ph:${text}`,
-    ignoreSelection: true,
-  });
 
 function buildDecorations(doc: PMNode): DecorationSet {
   const decos: Decoration[] = [];
@@ -51,15 +52,10 @@ function buildDecorations(doc: PMNode): DecorationSet {
         if (level === 'chapter') count.section = count.subsection = 0;
         if (level === 'section') count.subsection = 0;
         const sep = (block.attrs.sep as string | null) ?? ' ';
-        decos.push(widget(pos + 1, 'no', formatDivisionNum(level, count[level]) + sep));
-        if (block.content.size === 0) {
-          decos.push(
-            placeholder(
-              pos + 1,
-              { chapter: '章', section: '節', subsection: '款' }[level] + 'の名前を入力',
-            ),
-          );
-        }
+        const name = { chapter: '章', section: '節', subsection: '款' }[level] + 'の名前を入力';
+        decos.push(
+          line(pos, block, marks(block, formatDivisionNum(level, count[level]) + sep, name)),
+        );
         return;
       }
       case 'article': {
@@ -70,46 +66,47 @@ function buildDecorations(doc: PMNode): DecorationSet {
         block.forEach((child, childOffset) => {
           const cpos = pos + 1 + childOffset;
           if (child.type.name === 'articleCaption') {
+            // 「）」と「一般向け」は CSS で描く（.caption-wrap::after・.article[data-general] h5::after）
             const label = articleLabel(num);
-            if (deleted) {
-              decos.push(widget(cpos + 1, 'no', `${label}　削除`));
-              return;
-            }
-            decos.push(widget(cpos + 1, 'no', label + '（'));
-            if (child.content.size === 0) decos.push(placeholder(cpos + 1, '見出しを入力'));
-            decos.push(widget(cpos + 1 + child.content.size, 'no paren-close', '）', 1));
-            if (block.attrs.general) {
-              decos.push(widget(cpos + 1 + child.content.size, 'genmark', '一般向け', 2));
-            }
+            decos.push(
+              line(
+                cpos,
+                child,
+                deleted
+                  ? { 'data-no': `${label}　削除` }
+                  : marks(child, label + '（', '見出しを入力'),
+              ),
+            );
             return;
           }
           if (child.type.name !== 'lawLine') return;
           const info = infos[i++]!;
           decos.push(
-            Decoration.node(cpos, cpos + child.nodeSize, { class: `law-line--${info.cls}` }),
+            line(cpos, child, {
+              class: `law-line--${info.cls}`,
+              ...marks(child, info.label && info.label + '　', PLACEHOLDER[info.cls] ?? ''),
+            }),
           );
-          if (info.label) decos.push(widget(cpos + 1, 'no', info.label + '　'));
-          if (child.content.size === 0)
-            decos.push(placeholder(cpos + 1, PLACEHOLDER[info.cls] ?? ''));
         });
         return;
       }
       default:
         // 前文・附則・別表・本文の行
         block.descendants((child, childOffset) => {
-          if (child.type.name !== 'plainLine') return true;
           const cpos = pos + 1 + childOffset;
+          if (child.type.name === 'appendixHeading') {
+            decos.push(line(cpos, child, marks(child, '', '別表の見出しを入力')));
+            return false;
+          }
+          if (child.type.name !== 'plainLine') return true;
           decos.push(
-            Decoration.node(cpos, cpos + child.nodeSize, {
+            line(cpos, child, {
               class: `law-line--${plainLineClass((child.attrs.indent as string) + child.textContent)}`,
+              ...marks(child, '', 'ここに入力'),
             }),
           );
-          if (child.content.size === 0) decos.push(placeholder(cpos + 1, 'ここに入力'));
           return false;
         });
-        if (block.type.name === 'appendix' && block.firstChild?.content.size === 0) {
-          decos.push(placeholder(pos + 2, '別表の見出しを入力'));
-        }
     }
   });
   return DecorationSet.create(doc, decos);

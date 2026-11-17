@@ -131,6 +131,29 @@ describe('エディタ', () => {
     expect(t.article('第1条').paragraphs).toHaveLength(2);
   });
 
+  it('番号と空の行の案内表示は行の属性で描き、行の中に編集できない要素を置かない（日本語変換との干渉を防ぐ）', () => {
+    const t = setup(loadDoc('R0801003.md'));
+    t.cursorAt('第1条', 2, 0); // 第1号の先頭
+    t.editor.commands.setTextSelection(t.editor.state.selection.$from.end());
+    t.run(enterInLine);
+    const dom = t.editor.view.dom;
+    const ce = '[contenteditable="false"]';
+    expect(dom.querySelectorAll(`.law-line ${ce}, .caption ${ce}, .division ${ce}`)).toHaveLength(
+      0,
+    );
+    const empty = dom.querySelector<HTMLElement>('p.law-line[data-ph]')!;
+    expect(empty.dataset.no).toBe('二　');
+    expect(empty.dataset.ph).toBe('ここに号を入力');
+    expect(empty.style.getPropertyValue('--ph')).toBe('"ここに号を入力"');
+    // 文字を入れると案内表示の属性が外れ、番号は残る
+    t.editor.commands.insertContent('あ');
+    const line = [...dom.querySelectorAll<HTMLElement>('p.law-line')].find(
+      (e) => e.textContent === 'あ',
+    )!;
+    expect(line.hasAttribute('data-ph')).toBe(false);
+    expect(line.dataset.no).toBe('二　');
+  });
+
   it('行の途中の Enter は残りを次の行に送る', () => {
     const t = setup(loadDoc('R0801003.md'));
     t.cursorAt('第3条', 1, 3);

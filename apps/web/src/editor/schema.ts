@@ -10,6 +10,12 @@ import { Mark, Node, mergeAttributes } from '@tiptap/core';
 
 export type LineKind = 'kou' | 'gou' | 'saibun' | 'cont';
 
+/**
+ * 行の文言の入れ物。番号は行の ::before、空の行の案内表示はこの入れ物の ::before で描く（plugins.ts の装飾の説明を参照）。
+ * 案内表示を行の ::after にすると、空の行の改行（ProseMirror-trailingBreak）の後ろ、つまり次の行に回ってしまう。
+ */
+const LINE_TEXT = ['span', { class: 'lt' }, 0] as const;
+
 export const RuleDocument = Node.create({
   name: 'doc',
   topNode: true,
@@ -56,7 +62,7 @@ export const Division = Node.create({
     return [
       tag,
       { 'data-division': node.attrs.level, class: `division division--${node.attrs.level}` },
-      0,
+      LINE_TEXT,
     ];
   },
 });
@@ -106,7 +112,12 @@ export const ArticleCaption = Node.create({
     return [{ tag: 'h5' }];
   },
   renderHTML() {
-    return ['h5', { class: 'caption' }, ['span', { class: 'caption-text' }, 0]];
+    // caption-wrap は「）」を ::after で描くための入れ物
+    return [
+      'h5',
+      { class: 'caption' },
+      ['span', { class: 'caption-wrap' }, ['span', { class: 'caption-text lt' }, 0]],
+    ];
   },
 });
 
@@ -122,7 +133,7 @@ export const LawLine = Node.create({
     return [{ tag: 'p[data-kind]' }];
   },
   renderHTML({ node }) {
-    return ['p', { class: 'law-line', 'data-kind': node.attrs.kind }, 0];
+    return ['p', { class: 'law-line', 'data-kind': node.attrs.kind }, LINE_TEXT];
   },
 });
 
@@ -138,7 +149,7 @@ export const PlainLine = Node.create({
     return [{ tag: 'p[data-plain]' }];
   },
   renderHTML() {
-    return ['p', { class: 'law-line', 'data-plain': '' }, 0];
+    return ['p', { class: 'law-line', 'data-plain': '' }, LINE_TEXT];
   },
 });
 
@@ -244,7 +255,7 @@ export const AppendixHeading = Node.create({
     return [{ tag: 'h2.appendix-heading' }];
   },
   renderHTML() {
-    return ['h2', { class: 'appendix-heading' }, 0];
+    return ['h2', { class: 'appendix-heading' }, LINE_TEXT];
   },
 });
 
