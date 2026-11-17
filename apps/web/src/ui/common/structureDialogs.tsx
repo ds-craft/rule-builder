@@ -12,6 +12,7 @@ import {
 } from '@rule-builder/core';
 import type { Transaction } from '@tiptap/pm/state';
 import { useState, type ReactNode } from 'react';
+import { create } from 'zustand';
 import type { CommandContext } from '../../commands/types.ts';
 import {
   articleNums,
@@ -327,10 +328,10 @@ export function openRenumberDialog(ctx: CommandContext) {
     main: String(old?.main ?? 1),
     branch: old?.branches[0] ? String(old.branches[0]) : '',
   };
-  let setMsg: (m: string) => void = () => {};
+  const msgStore = create<{ msg: string }>(() => ({ msg: '' }));
+  const setMsg = (msg: string) => msgStore.setState({ msg });
   function Body() {
-    const [msg, setM] = useState('');
-    setMsg = setM;
+    const msg = msgStore((s) => s.msg);
     return (
       <>
         <p style={{ marginTop: 0 }}>

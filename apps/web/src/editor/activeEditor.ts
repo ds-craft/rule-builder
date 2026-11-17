@@ -15,3 +15,8 @@ export function setActiveEditor(editor: Editor | null) {
 export function bumpEditorVersion() {
   useActiveEditor.setState((s) => ({ version: s.version + 1 }));
 }
+
+/** エディタのキー操作から画面の操作を呼ぶための受け口（Ctrl+Enter で条の挿入ダイアログなど） */
+export const editorHandlers = {
+  insertArticle: () => {},
+};

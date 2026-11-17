@@ -8,7 +8,7 @@ import { useCommandContext } from '../commands/useCommandContext.ts';
 import { LawTitle } from '../render/RuleView.tsx';
 import { useApp, type OpenEntry } from '../state/store.ts';
 import { Menu, MiniToolbar, type MenuItem } from '../ui/common/Menu.tsx';
-import { bumpEditorVersion, setActiveEditor } from './activeEditor.ts';
+import { bumpEditorVersion, editorHandlers, setActiveEditor } from './activeEditor.ts';
 import { articleCursor, cursorLocation } from './commands.ts';
 import { bodyFromPM, type PMNode } from './convert.ts';
 import { RuleEditing } from './RuleEditing.ts';
@@ -33,9 +33,8 @@ export function RuleEditorView({
   const [menu, setMenu] = useState<{ x: number; y: number; items: MenuItem[] } | null>(null);
   const [mini, setMini] = useState<DOMRect | null>(null);
   const ctx = useCommandContext();
-  const insertRef = useRef(() => {});
   useEffect(() => {
-    insertRef.current = () => getCommand('article-after').run(ctx);
+    editorHandlers.insertArticle = () => getCommand('article-after').run(ctx);
   });
 
   const editor = useEditor(
@@ -49,7 +48,7 @@ export function RuleEditorView({
         RuleEditing.configure({
           notify: showToast,
           getUndoManager: () => entry.undo,
-          onInsertArticle: () => insertRef.current(),
+          onInsertArticle: () => editorHandlers.insertArticle(),
         }),
       ],
       editable: !entry.readOnly,
