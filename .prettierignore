@@ -1,0 +1,9 @@
+node_modules/
+dist/
+coverage/
+package-lock.json
+test/fixtures/
+apps/web/src/styles/portal/
+docs/implementation-plan.md
+prototype/
+*.md

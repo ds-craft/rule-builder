@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+*.log
+*.local
+*.tsbuildinfo
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# 手順書とプロトタイプはリポジトリに含めない
+docs/implementation-plan.md
+prototype/
