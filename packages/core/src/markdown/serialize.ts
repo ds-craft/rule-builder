@@ -72,9 +72,14 @@ function divisionChild(block: DivisionChild, chunks: string[]) {
   }
 }
 
-export function divisionHeading(d: Division): string {
+/** 章・節・款の見出しの文言（# の後。例「第1章 総則」）。 */
+export function divisionHeadingText(d: Division): string {
   const title = d.title ? (d.sep ?? ' ') + d.title : '';
-  return '#'.repeat(DIVISION_HASHES[d.level]) + ' ' + formatDivisionNum(d.level, d.num) + title;
+  return formatDivisionNum(d.level, d.num) + title;
+}
+
+export function divisionHeading(d: Division): string {
+  return '#'.repeat(DIVISION_HASHES[d.level]) + ' ' + divisionHeadingText(d);
 }
 
 /** 条の見出しの文言（##### の後）。 */
@@ -90,6 +95,11 @@ function articleHeading(a: Article): string {
 }
 
 function articleBody(a: Article): string {
+  return articleBodyLines(a).join('\n');
+}
+
+/** 条の本文の各行（Markdown の行。番号つき）。 */
+export function articleBodyLines(a: Article): string[] {
   const out: string[] = [];
   const cont = (c: ContinuationLines | undefined) => {
     if (c) out.push(...c.map(serializeInline));
@@ -107,5 +117,5 @@ function articleBody(a: Article): string {
       });
     });
   });
-  return out.join('\n');
+  return out;
 }

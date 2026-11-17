@@ -33,7 +33,8 @@ export default tseslint.config(
     plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+      // HMR のための警告。共有の関数をコンポーネントと同じファイルに置くことがあるため切る
+      'react-refresh/only-export-components': 'off',
     },
   },
   {

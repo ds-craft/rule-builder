@@ -1,0 +1,40 @@
+/* React 版で足したもの（プロトタイプとの差分） */
+#root {
+  height: 100%;
+}
+.navlist .lv4 a {
+  padding-left: 34px;
+}
+.navlist .lv3 a {
+  padding-left: 26px;
+}
+.tpl:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.tpl:disabled:hover .thumb {
+  border-color: var(--g200);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+.backstage nav a.back {
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.drop[aria-disabled='true'] {
+  opacity: 0.6;
+}
+.menu button[aria-current='true'] {
+  font-weight: 700;
+}
+
+/* 紙面の上の条文：portal の .main-content の代わりに .sheet が余白を持つ */
+.sheet .rb-portal {
+  background: transparent;
+  overflow-x: visible;
+}
+.sheet .rb-portal .law-title {
+  margin-top: 0;
+}
+.sheet .rb-portal a[target='_blank'] {
+  cursor: pointer;
+}
