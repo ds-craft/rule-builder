@@ -3,7 +3,13 @@
 import { ChevronDown, Eye } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
+import type { ArticleNum } from '@rule-builder/core';
+import { TextSelection } from '@tiptap/pm/state';
 import { getCommand, isEnabled } from '../../commands/registry.ts';
+import { articleCursor, cursorLocation } from '../../editor/commands.ts';
+import { articleLabel } from '../../editor/lines.ts';
+import { targetPos } from '../../editor/navigation.ts';
+import { RuleEditorView } from '../../editor/RuleEditorView.tsx';
 import { useCommandContext } from '../../commands/useCommandContext.ts';
 import { layoutRule } from '../../render/layout.ts';
 import { RuleView } from '../../render/RuleView.tsx';
@@ -15,6 +21,8 @@ import { Ribbon } from './Ribbon.tsx';
 import { StatusBar } from './StatusBar.tsx';
 import { TaskPane } from './TaskPane.tsx';
 import { TitleBar } from './TitleBar.tsx';
+
+const KIND_KEY: Record<string, string> = { kou: 'p', gou: 'i', saibun: 's' };
 
 const PANE_TITLES: Record<PaneKind, string> = {
   info: 'ルールの情報',
@@ -47,6 +55,8 @@ function Editor({ index }: { index: number }) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [switcher, setSwitcher] = useState<{ x: number; y: number } | null>(null);
   const [activeKey, setActiveKey] = useState<string | null>(null);
+  const cursor = ctx.editor ? articleCursor(ctx.editor.state) : null;
+  const kind = cursor && cursor.index >= 0 ? cursor.infos[cursor.index]!.kind : null;
 
   // スマホでは開いたときにナビゲーションとリボンを畳む
   useEffect(() => {
@@ -70,13 +80,28 @@ function Editor({ index }: { index: number }) {
     return () => window.removeEventListener('keydown', onKey);
   });
 
-  const scrollTo = (selector: string) => {
-    const el = canvasRef.current?.querySelector(selector);
-    el?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  const editor = ctx.editor;
+  const editing = ui.mode === 'edit' && !entry.readOnly;
+
+  /** 目次・検索結果のキーの場所へ移動する（編集中はカーソルも移す） */
+  const goTo = (key: string) => {
     if (ctx.isMobile) setUi({ nav: false });
+    if (editing && editor) {
+      const pos = targetPos(editor.state.doc, key);
+      if (pos === null) return;
+      const dom = editor.view.nodeDOM(pos);
+      if (dom instanceof HTMLElement) dom.scrollIntoView({ block: 'start', behavior: 'smooth' });
+      const $pos = editor.state.doc.resolve(Math.min(pos + 1, editor.state.doc.content.size));
+      const sel = TextSelection.findFrom($pos, 1, true);
+      if (sel) editor.view.dispatch(editor.state.tr.setSelection(sel));
+      editor.view.focus();
+      return;
+    }
+    const sel = key[0] === 'h' ? `[data-key="${key}"]` : `[data-line="${key}"]`;
+    canvasRef.current?.querySelector(sel)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
-  const op = '閲覧（公開中の版）';
+  const op = entry.readOnly ? '閲覧（公開中の版）' : '改正（この下書きはまだ保存されません）';
   const title = `${entry.doc.meta.name || '（名称未設定）'} — ${op}`;
   const switcherItems: MenuItem[] = [
     { type: 'heading', text: '開いているルール' },
@@ -94,7 +119,7 @@ function Editor({ index }: { index: number }) {
           }}
         >
           <span>{e.doc.meta.name}</span>
-          <span className="k">閲覧</span>
+          <span className="k">{e.readOnly ? '閲覧' : '改正'}</span>
         </button>
       ),
     })),
@@ -131,16 +156,26 @@ function Editor({ index }: { index: number }) {
         />
       )}
       <div className="editor">
-        <Ribbon />
+        <Ribbon
+          articleLabel={
+            cursor?.article.attrs.num
+              ? articleLabel(cursor.article.attrs.num as ArticleNum)
+              : cursor
+                ? '条'
+                : null
+          }
+          currentKind={KIND_KEY[kind ?? ''] ?? null}
+          singleParagraph={!!cursor && cursor.infos.filter((i) => i.kind === 'kou').length <= 1}
+        />
         {ui.nav && (
           <NavigationPane
             sections={sections}
             activeKey={activeKey}
             onGoHeading={(key) => {
               setActiveKey(key);
-              scrollTo(`[data-key="${key}"]`);
+              goTo(key);
             }}
-            onGoLine={(key) => scrollTo(`[data-line="${key}"]`)}
+            onGoLine={goTo}
           />
         )}
         <div className="canvas" ref={canvasRef}>
@@ -155,13 +190,22 @@ function Editor({ index }: { index: number }) {
               </span>
             </div>
           )}
-          <div className="sheet" style={sheetStyle}>
-            <RuleView
-              doc={entry.doc}
-              sections={sections}
-              generalOnly={ui.mode === 'read' && ui.generalOnly}
-              onTitleClick={() => setUi({ pane: 'info' })}
-            />
+          <div className={'sheet' + (editing ? ' editing' : '')} style={sheetStyle}>
+            {!entry.readOnly && (
+              <RuleEditorView
+                entry={entry}
+                hidden={!editing}
+                onTitleClick={() => setUi({ pane: 'info' })}
+              />
+            )}
+            {!editing && (
+              <RuleView
+                doc={entry.doc}
+                sections={sections}
+                generalOnly={ui.generalOnly}
+                onTitleClick={() => setUi({ pane: 'info' })}
+              />
+            )}
           </div>
         </div>
         {ui.pane && (
@@ -176,7 +220,10 @@ function Editor({ index }: { index: number }) {
             )}
           </TaskPane>
         )}
-        <StatusBar location="—" summary={`公開中の版（${entry.sha.slice(0, 7)}）`} />
+        <StatusBar
+          location={editing && editor ? cursorLocation(editor.state) : '—'}
+          summary={`元にした版 ${entry.sha.slice(0, 7)}`}
+        />
       </div>
       <div
         className={'backdrop' + (backdrop ? ' open' : '')}

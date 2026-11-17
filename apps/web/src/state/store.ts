@@ -1,8 +1,10 @@
 // アプリ全体の状態。
 // 開いている文書（entries）と、画面の表示状態（ui）を持つ。
-// Phase 5 で改正案（Yjs 文書）を入れるまでは、公開中のルールを閲覧用に開くだけ。
+// Phase 5 で改正案（1件＝1つの Y.Doc）にするまでは、公開中のルールをこのブラウザの中だけで編集する（保存しない）。
 
-import type { RuleDoc } from '@rule-builder/core';
+import type { RuleDoc, TopBlock } from '@rule-builder/core';
+import type * as Y from 'yjs';
+import type { KeptUndoManager } from '../editor/ydoc.ts';
 import { create } from 'zustand';
 
 export type OpenEntry = {
@@ -14,8 +16,13 @@ export type OpenEntry = {
   /** 取得したときの main のコミットSHA */
   sha: string;
   markdown: string;
+  /** 本文の最新の写し（エディタの変更を少し遅れて反映する。表示・書き出し用） */
   doc: RuleDoc;
   readOnly: boolean;
+  /** 本文の実体（エディタがそのまま編集する） */
+  ydoc: Y.Doc;
+  fragment: Y.XmlFragment;
+  undo: KeptUndoManager;
 };
 
 export type RibbonTab = 'home' | 'insert' | 'review' | 'view' | 'article';
@@ -47,6 +54,8 @@ export type AppState = {
   /** 開いている文書を足し、その位置を返す（同じルールがあればそれを使う） */
   openEntry: (entry: OpenEntry) => number;
   closeAll: () => void;
+  /** エディタの変更をモデルの写しに反映する */
+  updateBody: (key: string, body: TopBlock[]) => void;
   setCurrent: (index: number) => void;
   setUi: (patch: Partial<UiState>) => void;
   showToast: (message: string) => void;
@@ -60,7 +69,7 @@ export const initialUi: UiState = {
   ribbonOpen: true,
   nav: true,
   pane: null,
-  mode: 'read',
+  mode: 'edit',
   generalOnly: false,
   showChanges: true,
   zoom: 100,
@@ -83,7 +92,16 @@ export const useApp = create<AppState>()((set, get) => ({
     return entries.length;
   },
   closeAll() {
+    get().entries.forEach((e) => {
+      e.undo.dispose();
+      e.ydoc.destroy();
+    });
     set({ entries: [], current: -1 });
+  },
+  updateBody(key, body) {
+    set((s) => ({
+      entries: s.entries.map((e) => (e.key === key ? { ...e, doc: { ...e.doc, body } } : e)),
+    }));
   },
   setCurrent(index) {
     set({ current: index });

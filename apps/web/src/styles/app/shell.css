@@ -38,3 +38,89 @@
 .sheet .rb-portal a[target='_blank'] {
   cursor: pointer;
 }
+
+/* ---- 紙面のエディタ（portal の見た目に合わせる。章・節は平たい見出しの行なので portal の .chapter > h2 の代わり） ---- */
+.rule-edit .rb-editor {
+  outline: none;
+}
+.rule-edit .law-title {
+  cursor: pointer;
+  border-radius: 4px;
+}
+.rule-edit .law-title:hover {
+  outline: 1px dashed var(--g420);
+  outline-offset: 4px;
+}
+.rb-editor h2.division--chapter,
+.rb-editor .appendix > h2 {
+  font-size: 17px;
+  font-weight: bold;
+  margin: 44px 0 16px calc(var(--law-zw) * 3);
+}
+.rb-editor h3.division--section {
+  font-size: 15.5px;
+  font-weight: bold;
+  margin: 22px 0 12px calc(var(--law-zw) * 4);
+}
+.rb-editor h4.division--subsection {
+  font-size: 15px;
+  font-weight: bold;
+  margin: 18px 0 10px calc(var(--law-zw) * 5);
+  color: var(--color-neutral-solid-gray-800);
+}
+.rb-editor .article h5 {
+  display: block;
+}
+.rb-editor .article.is-deleted h5 .caption-text {
+  display: none;
+}
+.rb-editor .no {
+  user-select: none;
+}
+.rb-editor .paren-close {
+  margin-left: 0;
+}
+.rb-editor .ph {
+  color: var(--g420);
+  background: var(--g50);
+  border-radius: 2px;
+  padding: 0 4px;
+  pointer-events: none;
+  user-select: none;
+  font-weight: 400;
+}
+.rb-editor .raw-line {
+  font-family: ui-monospace, Consolas, monospace;
+  font-size: 13px;
+  background: var(--warn-50);
+}
+.rb-editor .law-line:has(.ProseMirror-trailingBreak:only-child) {
+  min-height: 1.7em;
+}
+.rb-editor p.law-line {
+  position: relative;
+}
+.rb-editor .genmark {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--blue-900);
+  border: 1px solid var(--blue);
+  border-radius: 10px;
+  padding: 0 8px;
+  margin-left: 8px;
+  vertical-align: 2px;
+  white-space: nowrap;
+  user-select: none;
+}
+.rb-editor .ProseMirror-selectednode {
+  outline: 2px solid var(--blue-100);
+}
+.rb-editor .is-current {
+  background: #f3f7ff;
+  box-shadow:
+    -8px 0 0 #f3f7ff,
+    8px 0 0 #f3f7ff;
+}
+.rb-editor .article.cur-article {
+  box-shadow: -14px 0 0 -11px var(--ctx);
+}

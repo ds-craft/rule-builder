@@ -12,6 +12,8 @@ import {
   type RuleList,
 } from '../../github/rules.ts';
 import { useApp, type OpenLocation } from '../../state/store.ts';
+import * as Y from 'yjs';
+import { bodyField, createUndoManager, writeBody } from '../../editor/ydoc.ts';
 import { RecentList } from './HomePage.tsx';
 
 function Place({
@@ -104,17 +106,24 @@ function RemoteRules() {
     try {
       const md = await fetchRuleMarkdown(list.sha, r.path);
       const { doc } = parseRule(md);
+      const key = `remote:${r.id}:${list.sha}`;
+      const ydoc = new Y.Doc();
+      const fragment = ydoc.getXmlFragment(bodyField(key));
+      writeBody(fragment, doc.body);
       const i = openEntry({
-        key: `remote:${r.id}:${list.sha}`,
+        key,
         source: 'remote',
         ruleId: r.id,
         path: r.path,
         sha: list.sha,
         markdown: md,
         doc,
-        readOnly: true,
+        readOnly: false,
+        ydoc,
+        fragment,
+        undo: createUndoManager(fragment),
       });
-      setUi({ mode: 'read', tab: 'view' });
+      setUi({ mode: 'edit', tab: 'home' });
       void navigate(`/edit/${i}`);
     } catch (e) {
       setError(errorMessage(e));

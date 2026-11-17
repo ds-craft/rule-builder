@@ -1,6 +1,8 @@
 // コマンド定義の一覧。リボン・右クリックメニュー・スマホの下部バー・キー操作が同じ定義を使う。
 // まだ中身のない操作は enabled が false を返し、無効表示になる（後のフェーズで中身を入れる）。
 
+import { serializeRule } from '@rule-builder/core';
+import type { EditorState } from '@tiptap/pm/state';
 import {
   ArrowDown,
   ArrowLeftRight,
@@ -15,6 +17,7 @@ import {
   IndentIncrease,
   Link,
   List,
+  Minus,
   Pencil,
   Plus,
   Redo2,
@@ -25,65 +28,136 @@ import {
   Undo2,
   Users,
 } from 'lucide-react';
-import { serializeRule } from '@rule-builder/core';
-import type { Command, CommandContext } from './types.ts';
+import {
+  addItem,
+  addParagraph,
+  articleCursor,
+  changeKind,
+  currentLineKind,
+  demote,
+  promote,
+  toggleGeneral,
+  type Result,
+} from '../editor/commands.ts';
+import { runResult } from '../editor/RuleEditing.ts';
 import { ZOOM_MAX, ZOOM_MIN } from '../state/store.ts';
 import { openMarkdownDialog } from '../ui/common/dialogs.tsx';
+import type { Command, CommandContext } from './types.ts';
 
 const never = () => false;
-const editable = (ctx: CommandContext) =>
-  !!ctx.entry && !ctx.entry.readOnly && ctx.app.ui.mode === 'edit';
+
+/** 編集中のエディタに対する操作 */
+const edit = (f: (s: EditorState) => Result | null) => (ctx: CommandContext) => {
+  const e = ctx.editor;
+  if (!e) return;
+  runResult(e, f(e.state), ctx.app.showToast, ctx.entry?.undo);
+  e.commands.focus();
+};
+
+const inArticle = (ctx: CommandContext) => !!ctx.editor && !!articleCursor(ctx.editor.state);
+const lineKind = (ctx: CommandContext) => (ctx.editor ? currentLineKind(ctx.editor.state) : null);
+const inLine = (ctx: CommandContext) => {
+  const k = lineKind(ctx);
+  return k !== null && k !== 'cont';
+};
 
 const list: Command[] = [
-  // ---- 元に戻す（Phase 3） ----
-  { id: 'undo', label: '元に戻す', icon: Undo2, shortcut: 'Ctrl+Z', enabled: never, run() {} },
-  { id: 'redo', label: 'やり直し', icon: Redo2, shortcut: 'Ctrl+Y', enabled: never, run() {} },
+  // ---- 元に戻す ----
+  {
+    id: 'undo',
+    label: '元に戻す',
+    icon: Undo2,
+    shortcut: 'Ctrl+Z',
+    enabled: (ctx) => !!ctx.editor && !!ctx.entry?.undo.canUndo(),
+    run: (ctx) => {
+      ctx.entry?.undo.stopCapturing();
+      ctx.editor?.chain().focus().undo().run();
+    },
+  },
+  {
+    id: 'redo',
+    label: 'やり直し',
+    icon: Redo2,
+    shortcut: 'Ctrl+Y',
+    enabled: (ctx) => !!ctx.editor && !!ctx.entry?.undo.canRedo(),
+    run: (ctx) => ctx.editor?.chain().focus().redo().run(),
+  },
 
-  // ---- 行の種類・段落・追加（Phase 3） ----
-  { id: 'kind-p', label: '項', icon: '①', tip: 'この行を「項」にする', enabled: never, run() {} },
-  { id: 'kind-i', label: '号', icon: '一', tip: 'この行を「号」にする', enabled: never, run() {} },
+  // ---- 行の種類・段落・追加 ----
+  {
+    id: 'kind-p',
+    label: '項',
+    icon: '①',
+    tip: 'この行を「項」にする',
+    enabled: inLine,
+    pressed: (ctx) => lineKind(ctx) === 'kou',
+    run: edit((s) => changeKind(s, 'kou')),
+  },
+  {
+    id: 'kind-i',
+    label: '号',
+    icon: '一',
+    tip: 'この行を「号」にする',
+    enabled: inLine,
+    pressed: (ctx) => lineKind(ctx) === 'gou',
+    run: edit((s) => changeKind(s, 'gou')),
+  },
   {
     id: 'kind-s',
     label: '号の細分',
     icon: 'イ',
     tip: 'この行を「号の細分」にする',
-    enabled: never,
-    run() {},
+    enabled: inLine,
+    pressed: (ctx) => lineKind(ctx) === 'saibun',
+    run: edit((s) => changeKind(s, 'saibun')),
   },
   {
     id: 'promote',
     label: 'レベルを上げる',
     icon: IndentDecrease,
     shortcut: 'Shift+Tab',
-    enabled: never,
-    run() {},
+    enabled: (ctx) => ['gou', 'saibun'].includes(lineKind(ctx) ?? ''),
+    run: edit(promote),
   },
   {
     id: 'demote',
     label: 'レベルを下げる',
     icon: IndentIncrease,
     shortcut: 'Tab',
-    enabled: never,
-    run() {},
+    enabled: (ctx) => ['kou', 'gou'].includes(lineKind(ctx) ?? ''),
+    run: edit(demote),
   },
   {
     id: 'add-para',
     label: '項',
     icon: Plus,
     tip: '項を追加',
-    shortcut: 'Enter',
-    enabled: never,
-    run() {},
+    enabled: inArticle,
+    run: edit(addParagraph),
   },
-  { id: 'add-item', label: '号', icon: Plus, tip: '号を追加', enabled: never, run() {} },
+  {
+    id: 'add-item',
+    label: '号',
+    icon: Plus,
+    tip: '号を追加',
+    enabled: (ctx) => lineKind(ctx) !== null,
+    run: edit(addItem),
+  },
   {
     id: 'general',
     label: '一般向け',
     icon: Users,
     tip: '一般向け条文にする（ポータルの「一般向け条文のみ表示」で表示される）',
-    enabled: never,
-    pressed: () => false,
-    run() {},
+    enabled: inArticle,
+    pressed: (ctx) => !!(ctx.editor && articleCursor(ctx.editor.state)?.article.attrs.general),
+    run: (ctx) => {
+      const c = ctx.editor && articleCursor(ctx.editor.state);
+      edit(toggleGeneral)(ctx);
+      if (c)
+        ctx.app.showToast(
+          c.article.attrs.general ? '一般向けを解除しました' : '一般向け条文にしました',
+        );
+    },
   },
 
   // ---- 挿入（Phase 4） ----
@@ -166,7 +240,8 @@ const list: Command[] = [
     tip: 'ポータルでの見た目で確認',
     enabled: (ctx) => !!ctx.entry,
     pressed: (ctx) => ctx.app.ui.mode === 'read',
-    run: (ctx) => ctx.app.setUi({ mode: 'read' }),
+    run: (ctx) =>
+      ctx.app.setUi({ mode: 'read', tab: ctx.app.ui.tab === 'article' ? 'home' : ctx.app.ui.tab }),
   },
   {
     id: 'toggle-nav',
@@ -212,10 +287,11 @@ const list: Command[] = [
     enabled: (ctx) => !!ctx.entry,
     run: (ctx) => {
       ctx.app.setUi(ctx.isMobile ? { nav: true, pane: null } : { nav: true });
-      requestAnimationFrame(() => document.getElementById('navsearch')?.focus());
+      setTimeout(() => document.getElementById('navsearch')?.focus(), 0);
     },
   },
-  { id: 'save', label: '保存', icon: Save, shortcut: 'Ctrl+S', enabled: editable, run() {} },
+  // 下書きファイルの保存（Phase 5）
+  { id: 'save', label: '保存', icon: Save, shortcut: 'Ctrl+S', enabled: never, run() {} },
   {
     id: 'zoom-in',
     label: '拡大',
@@ -225,7 +301,7 @@ const list: Command[] = [
   {
     id: 'zoom-out',
     label: '縮小',
-    icon: Plus,
+    icon: Minus,
     run: (ctx) => ctx.app.setUi({ zoom: Math.max(ZOOM_MIN, ctx.app.ui.zoom - 10) }),
   },
 ];

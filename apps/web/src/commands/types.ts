@@ -1,3 +1,4 @@
+import type { Editor } from '@tiptap/core';
 import type { LucideIcon } from 'lucide-react';
 import type { AppState, OpenEntry } from '../state/store.ts';
 
@@ -5,6 +6,8 @@ import type { AppState, OpenEntry } from '../state/store.ts';
 export type CommandContext = {
   app: AppState;
   entry: OpenEntry | null;
+  /** 紙面で編集中のエディタ（編集モードのときだけ） */
+  editor: Editor | null;
   navigate: (to: string) => void;
   isMobile: boolean;
 };
