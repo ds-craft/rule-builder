@@ -148,3 +148,25 @@
 .rb-editor .article {
   position: relative;
 }
+
+/* ---- 新旧対照表（portal の .diff-table を .rb-portal の内側で使う） ---- */
+.print-area.rb-portal {
+  background: transparent;
+}
+.cmp-rule {
+  margin-bottom: 24px;
+}
+.cmp-table {
+  overflow-x: auto;
+}
+@media print {
+  .backstage .bs-body {
+    padding: 0;
+  }
+  .cmp-rule {
+    break-inside: auto;
+  }
+  .cmp-table tbody {
+    break-inside: avoid;
+  }
+}

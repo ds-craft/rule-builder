@@ -315,7 +315,7 @@ const list: Command[] = [
     id: 'compare',
     label: '新旧対照表',
     icon: Columns2,
-    enabled: never,
+    enabled: (ctx) => !!ctx.app.session,
     run: (ctx) => ctx.navigate('/file/print'),
   },
 

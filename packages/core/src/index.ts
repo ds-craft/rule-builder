@@ -14,4 +14,5 @@ export * from './ydoc/pmJson.ts';
 export * from './ydoc/yxml.ts';
 export * from './ydoc/proposal.ts';
 export * from './ydoc/draftFile.ts';
-export * from './compare/changes.ts';
+export * from './compare/index.ts';
+export * from './output/export.ts';

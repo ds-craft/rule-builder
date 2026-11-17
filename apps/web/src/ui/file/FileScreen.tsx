@@ -19,7 +19,9 @@ import { useApp } from '../../state/store.ts';
 import { TitleBar } from '../shell/TitleBar.tsx';
 import { formatRuleNumber } from '@rule-builder/core';
 import { HomePage } from './HomePage.tsx';
+import { ExportPage } from './ExportPage.tsx';
 import { InfoPage } from './InfoPage.tsx';
+import { PrintPage } from './PrintPage.tsx';
 import { SavePage } from './SavePage.tsx';
 import { NewPage } from './NewPage.tsx';
 import { OpenPage } from './OpenPage.tsx';
@@ -42,8 +44,8 @@ const PAGES: (PageDef | '-')[] = [
   '-',
   { key: 'info', icon: Info, label: '情報', needsProposal: true },
   { key: 'save', icon: Save, label: '保存', needsProposal: true },
-  { key: 'export', icon: Upload, label: '書き出し', needsProposal: true, notReady: true },
-  { key: 'print', icon: Columns2, label: '新旧対照表・印刷', needsProposal: true, notReady: true },
+  { key: 'export', icon: Upload, label: '書き出し', needsProposal: true },
+  { key: 'print', icon: Columns2, label: '新旧対照表・印刷', needsProposal: true },
   '-',
   { key: 'close', icon: X, label: '閉じる', needsProposal: true },
 ];
@@ -143,6 +145,8 @@ export function FileScreen() {
           {page === 'open' && <OpenPage />}
           {page === 'info' && <InfoPage />}
           {page === 'save' && <SavePage />}
+          {page === 'export' && <ExportPage />}
+          {page === 'print' && <PrintPage />}
         </div>
       </div>
     </>

@@ -1,0 +1,444 @@
+{
+ "R0410001": {
+  "rule_id": "R0410001",
+  "repealed": false,
+  "repeal": null,
+  "versions": [
+   {
+    "vid": "R0410001",
+    "kind": "制定",
+    "by_number": "令和4年国内法第1号",
+    "title": "ディープステート基本法",
+    "date_iso": "2022-09-25",
+    "date": "令和4年9月25日",
+    "end_iso": "2025-06-19",
+    "end": "令和7年6月19日",
+    "next_by_number": "令和7年ルール第2号",
+    "rule_name": "ディープステート基本法",
+    "url": "/rule/R0410001/R0410001.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0701002",
+    "kind": "改正",
+    "by_number": "令和7年ルール第2号",
+    "title": "禁止事項及び罰則に関するルール",
+    "date_iso": "2025-06-19",
+    "date": "令和7年6月19日",
+    "end_iso": null,
+    "end": null,
+    "next_by_number": null,
+    "rule_name": "ディープステート基本法",
+    "url": "/rule/R0410001.html",
+    "latest": true,
+    "compare_html": "<p class=\"diff-empty\">この改正で、条文の文言は変わっていません（リンクなど表示の変更のみ）。</p>"
+   }
+  ]
+ },
+ "R0501002": {
+  "rule_id": "R0501002",
+  "repealed": false,
+  "repeal": null,
+  "versions": [
+   {
+    "vid": "R0501002",
+    "kind": "制定",
+    "by_number": "令和5年ルール第2号",
+    "title": "瑠莉学術公国に関するルール特例",
+    "date_iso": "2023-03-25",
+    "date": "令和5年3月25日",
+    "end_iso": "2025-06-19",
+    "end": "令和7年6月19日",
+    "next_by_number": "令和7年ルール第3号",
+    "rule_name": "瑠莉学術公国に関するルール特例",
+    "url": "/rule/R0501002/R0501002.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0701003",
+    "kind": "改正",
+    "by_number": "令和7年ルール第3号",
+    "title": "国家に関するルール",
+    "date_iso": "2025-06-19",
+    "date": "令和7年6月19日",
+    "end_iso": null,
+    "end": null,
+    "next_by_number": null,
+    "rule_name": "瑠莉学術公国に関するルール特例",
+    "url": "/rule/R0501002.html",
+    "latest": true,
+    "compare_html": "<p class=\"diff-empty\">この改正で、条文の文言は変わっていません（リンクなど表示の変更のみ）。</p>"
+   }
+  ]
+ },
+ "R0701001": {
+  "rule_id": "R0701001",
+  "repealed": false,
+  "repeal": null,
+  "versions": [
+   {
+    "vid": "R0701001",
+    "kind": "制定",
+    "by_number": "令和7年ルール第1号",
+    "title": "基本ルール",
+    "date_iso": "2025-06-19",
+    "date": "令和7年6月19日",
+    "end_iso": "2026-07-28",
+    "end": "令和8年7月28日",
+    "next_by_number": "令和8年ルール第1号",
+    "rule_name": "基本ルール",
+    "url": "/rule/R0701001/R0701001.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0801001",
+    "kind": "改正",
+    "by_number": "令和8年ルール第1号",
+    "title": "基本ルールの一部を改正するルール",
+    "date_iso": "2026-07-28",
+    "date": "令和8年7月28日",
+    "end_iso": "2026-07-28",
+    "end": "令和8年7月28日",
+    "next_by_number": "令和8年ルール第2号",
+    "rule_name": "基本ルール",
+    "url": "/rule/R0701001/R0801001.html",
+    "latest": false,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和8年7月28日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和7年6月19日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第5条（参加条件）</div></td><td><div class=\"diff-line diff-heading is-same\">第5条（参加条件）</div></td></tr><tr><td><div class=\"diff-line is-same\">①　雑談鯖に参加している者は、すべて参加者となる権利を有します。</div></td><td><div class=\"diff-line is-same\">①　雑談鯖に参加している者は、すべて参加者となる権利を有します。</div></td></tr><tr><td><div class=\"diff-line\">②　雑談鯖に参加していない<ins class=\"diff-mark\">者のうち、過去に参加者であった者または国クラに参加したことがあると運営が確認した</ins>者は、運営の承認および参加者の承認を得ることで参加者となる権利を取得することができます。</div></td><td><div class=\"diff-line\">②　雑談鯖に参加していない者は、運営の承認および参加者の承認を得ることで参加者となる権利を取得することができます。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　雑談鯖に参加していない者のうち、前項に定める者以外の者（以下「新規参加希望者」といいます。）は、第5条の2から第5条の9までに定める手続を経ることで参加者となることができます。</ins></div></td><td><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">④</ins>　運営は、参加者となる権利を有する者が参加を申請したときは、速やかにその者をディスコード鯖に招待し、参加者たる権利を付与しなければなりません。</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">③</del>　運営は、参加者となる権利を有する者が参加を申請したときは、速やかにその者をディスコード鯖に招待し、参加者たる権利を付与しなければなりません。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">⑤</ins>　第2項の規定に基づいて参加を希望する者は、運営の承認によって一時的にディスコード鯖に参加することができます。ただし、運営は、当該参加希望者の参加に関して参加者の承認を得られなかった場合、その参加希望者を速やかにディスコード鯖から退出させなければなりません。</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">④</del>　第2項の規定に基づいて参加を希望する者は、運営の承認によって一時的にディスコード鯖に参加することができます。ただし、運営は、当該参加希望者の参加に関して参加者の承認を得られなかった場合、その参加希望者を速やかにディスコード鯖から退出させなければなりません。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">⑥</ins>　第2項に定める権利<ins class=\"diff-mark\">および第5条の4に基づき仮参加者たる地位を有する者の当該地位</ins>は、その者が参加者となった時点で消滅します。</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">⑤</del>　第2項に定める権利は、その者が参加者となった時点で消滅します。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">⑦</ins>　参加者は、第1項および第2項に定める権利を失った場合でも、第1条第3号の条件を満たす限り、参加者としての資格を保持します。</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">⑥</del>　参加者は、第1項および第2項に定める権利を失った場合でも、第1条第3号の条件を満たす限り、参加者としての資格を保持します。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の2（招待権）</ins></div></td><td rowspan=\"3\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　参加者となった日から起算して6か月以上が経過し、かつマイクラ鯖への累計参加時間が20時間以上の者（以下「招待権者」といいます。）は、新規参加希望者を招待することができます。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　招待権者は、新規参加希望者を招待しようとするときは、あらかじめ運営にその旨を届け出なければなりません。この場合、届け出をした招待権者（以下「招待者」といいます。）は、ルールに定める手続上および処罰上の責任を負います。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の3（参加審査）</ins></div></td><td rowspan=\"6\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　新規参加希望者は、前条第2項に定める届出の後、運営が実施する審査（以下「参加審査」といいます。）を受けなければなりません。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　参加審査は、2名以上の運営者が新規参加希望者と対話する方法により実施します。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　運営は、参加審査の結果を記録し、これをすべての運営者が閲覧できる方法で保存しなければなりません。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">④　運営は、参加審査が終了したときは、速やかに第2条に定める運営投票を行わなければなりません。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">⑤　前項の運営投票において運営の承認が得られなかった新規参加希望者については、次条から第5条の9までに定める手続を行わないものとします。この場合、運営はその旨を遅滞なく当該新規参加希望者およびその招待者に通知しなければなりません。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の4（仮参加）</ins></div></td><td rowspan=\"3\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　前条第4項の運営投票において運営の承認を得た新規参加希望者は、当該承認の日から起算して30日間（以下「仮参加期間」といいます。）、仮参加者としての地位を有します。ただし、仮参加期間の満了後も、第5条の6第2項の規定により参加者たる地位を取得するまで、または同条第3項の規定に基づく退出措置がとられるまでの間は、仮参加者は引き続き仮参加者としての地位を有するものとします。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　仮参加者は、参加者と同等の権利を有します。ただし、仮参加者は、参加者投票に参加することはできません。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の5（招待者の責任）</ins></div></td><td rowspan=\"5\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　招待者は、仮参加者が仮参加期間中にルールに違反する行為をしたときは、当該行為に関して連帯して責任を負い、処罰を受けるものとします。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　前項に基づき招待者に科される処罰の内容は、当該仮参加者に対して科される処罰を上限として、運営がその裁量により決定します。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　第1項に基づく処罰は、招待者が仮参加者を招待するにあたって通常期待される注意を尽くしたにもかかわらず当該ルール違反行為を予見することができなかったと運営が認める場合は、これを軽減し、または行わないことができます。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">④　その他処罰の方法に関しては、禁止事項及び罰則に関するルール第3章に準じます。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の6（異議申立て）</ins></div></td><td rowspan=\"4\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　参加者は、仮参加者が参加者たる地位を取得すること（以下「本参加」といいます。）について異議があるときは、運営に対し、仮参加者としての地位を取得した日から起算して37日（以下「異議申立て期間」といいます。）以内に当該仮参加者の本参加に関する異議を申し立てることができます。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　異議申立期間内に異議申立てがなかったとき、または異議が却下され、もしくは認められなかったときは、仮参加者は異議申立て期間の終了をもって参加者たる地位を取得します。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　異議申立てが認められたとき、運営は、当該仮参加者を速やかにディスコード鯖から退出させなければなりません。この場合、運営は、当該異議申立てが認められた旨を参加者および仮参加者に速やかに告知しなければなりません。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の7（予備審査）</ins></div></td><td rowspan=\"9\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　異議申立てがあったとき、運営は、当該異議申立ての内容を審査（以下「予備審査」といいます。）し、運営の承認によって次の各号に定める処理を行います。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">一　却下　次項各号に定める却下基準に該当すると認められる場合</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">二　簡易審査　客観的な記録のみによって事実の確認および判断が完結すると認められる場合</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">三　正式審査　前2号のいずれにも該当しない場合</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　運営は、異議申立てが次の各号のいずれかに該当するときは、当該異議申立てを却下することができます。ただし、運営は当該異議申立てを却下する前に、当該異議を申し立てた者に対し追加の説明を求め、補充の機会を設けなければなりません。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">一　仮参加者の具体的な言動が特定されていないもの</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">二　文脈から切り離された単発または偶発的な言動のみを根拠とするもの</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">三　言動の内容ではなく、発言の方法、趣味、価値観その他の個人的な性質または様式への不快感のみを根拠とするもの</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の8（簡易審査）</ins></div></td><td rowspan=\"4\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　簡易審査は、運営が行います。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　運営は、簡易審査によって異議申立てに理由があると判断したときは、運営の承認により仮参加者の本参加を認めない決定をすることができます。ただし、運営は本参加を認めない決定をする前に、当該仮参加者から意見を聴取しなければなりません。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　運営は、簡易審査の過程において事実関係について争いまたは疑いが生じたときは、速やかに当該異議申立ての審査を正式審査に移行しなければなりません。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第5条の9（正式審査）</ins></div></td><td rowspan=\"10\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　正式審査は、次の各号に定める者から構成する審査会議が行います。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">一　運営者全員（ただし、運営者が招待者である場合、その運営者を除きます。）</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">二　無作為に抽出した参加者3名（ただし、運営者、招待者、異議申立者および当該仮参加者を除きます。）</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">三　異議申立者</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">四　招待者</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">五　仮参加者</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　前項の各号に定める者は、審査会議に参加し発言することができます。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　審査会議の決定は、第1項第1号および第2号に定める者（以下「審査会議投票権者」といいます。）の秘密投票によって行い、棄権した者を除く審査会議投票権者の過半数の賛成を必要とします。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">④　審査会議は、正式審査によって異議申立てに理由があると判断したときは、審査会議の決定により仮参加者の本参加を認めない旨を決することができます。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">施行</ins>附則<ins class=\"diff-mark\">（令和7年6月19日施行）</ins></div></td><td><div class=\"diff-line diff-heading\">附則</div></td></tr><tr><td><div class=\"diff-line is-same\">　このルールは、公布の日から施行します。</div></td><td><div class=\"diff-line is-same\">　このルールは、公布の日から施行します。</div></td></tr><tr><td><div class=\"diff-line is-same\">　３ＤＳ半分こするくらい仲良しクラフトルールは廃止します。</div></td><td><div class=\"diff-line is-same\">　３ＤＳ半分こするくらい仲良しクラフトルールは廃止します。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">改正附則（令和8年7月28日施行・令和8年ルール第1号）</ins></div></td><td rowspan=\"3\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">　このルールは、公布の日から施行します。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">　このルールの施行時に参加者である者は、第5条の2第1項の規定に関わらず招待権者としての資格を有するものとみなします。</ins></div></td></tr></tbody>\n</table>"
+   },
+   {
+    "vid": "R0801002",
+    "kind": "改正",
+    "by_number": "令和8年ルール第2号",
+    "title": "基本ルールの一部を改正するルール",
+    "date_iso": "2026-07-28",
+    "date": "令和8年7月28日",
+    "end_iso": null,
+    "end": null,
+    "next_by_number": null,
+    "rule_name": "基本ルール",
+    "url": "/rule/R0701001.html",
+    "latest": true,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和8年7月28日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和8年7月28日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第2条の2（短縮投票）</ins></div></td><td rowspan=\"4\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　前条第2項の規定にかかわらず、運営者がボイスチャットまたはこれに準じる方法を用いて同時に参集する会議（以下この条において「同時会議」といいます。）において、当該同時会議に参加しているすべての運営者が短縮投票の実施に同意したときは、直ちに運営投票を開始し、当該同時会議の継続中に投票を終了することができます（以下この条において「短縮投票」といいます。）。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　短縮投票においては、前条第1項の規定を準用します。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　短縮投票による運営の承認には、投票の終了時までに明示的に棄権の意思を表示した者を除く運営者の総数の過半数の賛成を必要とします。ただし、別段の定めのある場合は、当該定めに従います。</ins></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">改正附則（令和8年7月28日施行・令和8年ルール第2号）</ins></div></td><td rowspan=\"2\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">　このルールは、公布の日から施行します。</ins></div></td></tr></tbody>\n</table>"
+   }
+  ]
+ },
+ "R0701002": {
+  "rule_id": "R0701002",
+  "repealed": false,
+  "repeal": null,
+  "versions": [
+   {
+    "vid": "R0701002",
+    "kind": "制定",
+    "by_number": "令和7年ルール第2号",
+    "title": "禁止事項及び罰則に関するルール",
+    "date_iso": "2025-06-19",
+    "date": "令和7年6月19日",
+    "end_iso": null,
+    "end": null,
+    "next_by_number": null,
+    "rule_name": "禁止事項及び罰則に関するルール",
+    "url": "/rule/R0701002.html",
+    "latest": true,
+    "compare_html": null
+   }
+  ]
+ },
+ "R0701003": {
+  "rule_id": "R0701003",
+  "repealed": false,
+  "repeal": null,
+  "versions": [
+   {
+    "vid": "R0701003",
+    "kind": "制定",
+    "by_number": "令和7年ルール第3号",
+    "title": "国家に関するルール",
+    "date_iso": "2025-06-19",
+    "date": "令和7年6月19日",
+    "end_iso": null,
+    "end": null,
+    "next_by_number": null,
+    "rule_name": "国家に関するルール",
+    "url": "/rule/R0701003.html",
+    "latest": true,
+    "compare_html": null
+   }
+  ]
+ },
+ "R0702001": {
+  "rule_id": "R0702001",
+  "repealed": false,
+  "repeal": null,
+  "versions": [
+   {
+    "vid": "R0702001",
+    "kind": "制定",
+    "by_number": "令和7年ルール施行令第1号",
+    "title": "国家の公認に係る国家に関するルール施行令",
+    "date_iso": "2025-06-19",
+    "date": "令和7年6月19日",
+    "end_iso": "2025-09-22",
+    "end": "令和7年9月22日",
+    "next_by_number": "令和7年ルール施行令第2号",
+    "rule_name": "国家の公認に係る国家に関するルール施行令",
+    "url": "/rule/R0702001/R0702001.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0702002",
+    "kind": "改正",
+    "by_number": "令和7年ルール施行令第2号",
+    "title": "国家の公認に係る国家に関するルール施行令の一部を改正する施行令",
+    "date_iso": "2025-09-22",
+    "date": "令和7年9月22日",
+    "end_iso": "2025-09-23",
+    "end": "令和7年9月23日",
+    "next_by_number": "令和7年ルール施行令第3号",
+    "rule_name": "国家の公認に係る国家に関するルール施行令",
+    "url": "/rule/R0702001/R0702002.html",
+    "latest": false,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和7年9月22日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和7年6月19日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line is-same\">　運営は、次の団体を国家として公認します。</div></td><td><div class=\"diff-line is-same\">　運営は、次の団体を国家として公認します。</div></td></tr><tr><td><div class=\"diff-line\">一　エメラルド<ins class=\"diff-mark\">連邦共和国</ins></div></td><td><div class=\"diff-line\">一　エメラルド<del class=\"diff-mark\">帝冠領</del></div></td></tr><tr><td><div class=\"diff-line is-same\">二　オスタリア帝冠領</div></td><td><div class=\"diff-line is-same\">二　オスタリア帝冠領</div></td></tr><tr><td><div class=\"diff-line is-same\">三　鰹節共和国</div></td><td><div class=\"diff-line is-same\">三　鰹節共和国</div></td></tr><tr><td><div class=\"diff-line is-same\">四　ジストリオ国</div></td><td><div class=\"diff-line is-same\">四　ジストリオ国</div></td></tr><tr><td><div class=\"diff-line is-same\">五　大カワムーラ連邦</div></td><td><div class=\"diff-line is-same\">五　大カワムーラ連邦</div></td></tr><tr><td><div class=\"diff-line is-same\">六　大クォーツ帝国</div></td><td><div class=\"diff-line is-same\">六　大クォーツ帝国</div></td></tr><tr><td><div class=\"diff-line is-same\">七　ヘルヴェティア中立同盟</div></td><td><div class=\"diff-line is-same\">七　ヘルヴェティア中立同盟</div></td></tr><tr><td><div class=\"diff-line is-same\">八　瑠莉学術公国</div></td><td><div class=\"diff-line is-same\">八　瑠莉学術公国</div></td></tr><tr><td><div class=\"diff-line is-same\">九　瑠璃国</div></td><td><div class=\"diff-line is-same\">九　瑠璃国</div></td></tr></tbody>\n</table>"
+   },
+   {
+    "vid": "R0702003",
+    "kind": "改正",
+    "by_number": "令和7年ルール施行令第3号",
+    "title": "国家の公認に係る国家に関するルール施行令の一部を改正する施行令",
+    "date_iso": "2025-09-23",
+    "date": "令和7年9月23日",
+    "end_iso": null,
+    "end": null,
+    "next_by_number": null,
+    "rule_name": "国家の公認に係る国家に関するルール施行令",
+    "url": "/rule/R0702001.html",
+    "latest": true,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和7年9月23日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和7年9月22日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line is-same\">　運営は、次の団体を国家として公認します。</div></td><td><div class=\"diff-line is-same\">　運営は、次の団体を国家として公認します。</div></td></tr><tr><td><div class=\"diff-line is-same\">一　エメラルド連邦共和国</div></td><td><div class=\"diff-line is-same\">一　エメラルド連邦共和国</div></td></tr><tr><td><div class=\"diff-none\">（削除）</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">二　オスタリア帝冠領</del></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">二</ins>　鰹節共和国</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">三</del>　鰹節共和国</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">三</ins>　ジストリオ国</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">四</del>　ジストリオ国</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">四</ins>　大カワムーラ連邦</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">五</del>　大カワムーラ連邦</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">五</ins>　大クォーツ帝国</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">六</del>　大クォーツ帝国</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">六</ins>　ヘルヴェティア中立同盟</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">七</del>　ヘルヴェティア中立同盟</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">七</ins>　瑠莉学術公国</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">八</del>　瑠莉学術公国</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">八</ins>　瑠璃国</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">九</del>　瑠璃国</div></td></tr></tbody>\n</table>"
+   }
+  ]
+ },
+ "R0801003": {
+  "rule_id": "R0801003",
+  "repealed": false,
+  "repeal": null,
+  "versions": [
+   {
+    "vid": "R0801003",
+    "kind": "制定",
+    "by_number": "令和8年ルール第3号",
+    "title": "旧ボーダー外の個人開発領に関するルール特例",
+    "date_iso": "2026-08-27",
+    "date": "令和8年8月27日",
+    "end_iso": null,
+    "end": null,
+    "next_by_number": null,
+    "rule_name": "旧ボーダー外の個人開発領に関するルール特例",
+    "url": "/rule/R0801003.html",
+    "latest": true,
+    "compare_html": null
+   }
+  ]
+ },
+ "R0401001": {
+  "rule_id": "R0401001",
+  "repealed": true,
+  "repeal": {
+   "date_iso": "2023-03-25",
+   "by_number": "令和5年ルール第1号",
+   "by_id": "R0501001",
+   "date": "令和5年3月25日"
+  },
+  "versions": [
+   {
+    "vid": "R0401001",
+    "kind": "制定",
+    "by_number": "令和4年ルール第1号",
+    "title": "3DS半分こするくらい仲良しクラフトルール",
+    "date_iso": "2022-09-25",
+    "date": "令和4年9月25日",
+    "end_iso": "2022-10-10",
+    "end": "令和4年10月10日",
+    "next_by_number": "令和4年ルール第4号",
+    "rule_name": "3DS半分こするくらい仲良しクラフトルール",
+    "url": "/rule/R0401001/R0401001.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0401004",
+    "kind": "改正",
+    "by_number": "令和4年ルール第4号",
+    "title": "3DS半分こするくらい仲良しクラフトルールの一部を改正するルール",
+    "date_iso": "2022-10-10",
+    "date": "令和4年10月10日",
+    "end_iso": "2023-03-25",
+    "end": "令和5年3月25日",
+    "next_by_number": "令和5年ルール第1号",
+    "rule_name": "3DS半分こするくらい仲良しクラフトルール",
+    "url": "/rule/R0401001.html",
+    "latest": true,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和4年10月10日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和4年9月25日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第4条</div></td><td><div class=\"diff-line diff-heading is-same\">第4条</div></td></tr><tr><td><div class=\"diff-line\">　運営はルールに定められた職権のみ行使し、これを<ins class=\"diff-mark\">濫</ins>用してはならない。</div></td><td><div class=\"diff-line\">　運営はルールに定められた職権のみ行使し、これを<del class=\"diff-mark\">乱</del>用してはならない。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第6条</div></td><td><div class=\"diff-line diff-heading is-same\">第6条</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①</ins>　運営は<ins class=\"diff-mark\">採決から二十四時間後までに投票に参加した者の三分の二以上の賛成</ins>によってルールの改正案を発議することができる。ルールは発議された改正案がDiscord鯖の投票にて<ins class=\"diff-mark\">採決から二十四時間後までに</ins>投票権を有する参加者の過半数の賛成を得た<ins class=\"diff-mark\">とき</ins>に即時改正される。</div></td><td><div class=\"diff-line\">　運営は<del class=\"diff-mark\">全会一致</del>によってルールの改正案を発議することができる。ルールは発議された改正案がDiscord鯖の投票にて投票権を有する参加者の過半数の賛成を得た<del class=\"diff-mark\">際</del>に即時改正される。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　休暇を申し出た運営はその期間中に前項の発議の採決に参加することはできない。</ins></div></td><td><div class=\"diff-none\">（新設）</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第24条</div></td><td><div class=\"diff-line diff-heading is-same\">第24条</div></td></tr><tr><td><div class=\"diff-line\">　このルールに違反した参加者は、運営から三分の二以上の賛成を得て選出された<ins class=\"diff-mark\">四</ins>人が裁判官を務める国際<ins class=\"diff-mark\">刑事</ins>裁判所で裁判を行う。</div></td><td><div class=\"diff-line\">　このルールに違反した参加者は、運営から三分の二以上の賛成を得て選出された<del class=\"diff-mark\">六</del>人が裁判官を務める国際<del class=\"diff-mark\">司法</del>裁判所で裁判を行う。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第26条</div></td><td><div class=\"diff-line diff-heading is-same\">第26条</div></td></tr><tr><td><div class=\"diff-line\">　<ins class=\"diff-mark\">処罰</ins>及び恩赦の判決は裁判官の全会一致による。</div></td><td><div class=\"diff-line\">　<del class=\"diff-mark\">罪</del>及び恩赦の判決は裁判官の全会一致による。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第27条</div></td><td><div class=\"diff-line diff-heading is-same\">第27条</div></td></tr><tr><td><div class=\"diff-line is-same\">　3DS半分こするくらい仲良しクラフトにおける処罰は以下のとおりとする。</div></td><td><div class=\"diff-line is-same\">　3DS半分こするくらい仲良しクラフトにおける処罰は以下のとおりとする。</div></td></tr><tr><td><div class=\"diff-line is-same\">一　注意　運営が違反者に文書で注意を行う。</div></td><td><div class=\"diff-line is-same\">一　注意　運営が違反者に文書で注意を行う。</div></td></tr><tr><td><div class=\"diff-line is-same\">二　罰金　違反者の財産の一部または全部を没収する。</div></td><td><div class=\"diff-line is-same\">二　罰金　違反者の財産の一部または全部を没収する。</div></td></tr><tr><td><div class=\"diff-line is-same\">三　禁固　ディープステートの広場に設置する牢獄に収監する。</div></td><td><div class=\"diff-line is-same\">三　禁固　ディープステートの広場に設置する牢獄に収監する。</div></td></tr><tr><td><div class=\"diff-line\">四　謹慎　Discord鯖をタイムアウト<ins class=\"diff-mark\">又はすべてのロールを剥奪</ins>する。</div></td><td><div class=\"diff-line\">四　謹慎　Discord鯖をタイムアウトする。</div></td></tr><tr><td><div class=\"diff-line is-same\">五　追放　Discord鯖からBANする。</div></td><td><div class=\"diff-line is-same\">五　追放　Discord鯖からBANする。</div></td></tr><tr><td><div class=\"diff-line is-same\">六　立入禁止　マイクラ鯖からからBANする。</div></td><td><div class=\"diff-line is-same\">六　立入禁止　マイクラ鯖からからBANする。</div></td></tr><tr><td><div class=\"diff-line is-same\">七　死刑　Discord鯖及びマイクラ鯖の両方から無期限かつ永久にBANする。</div></td><td><div class=\"diff-line is-same\">七　死刑　Discord鯖及びマイクラ鯖の両方から無期限かつ永久にBANする。</div></td></tr><tr><td><div class=\"diff-line is-same\">八　公認取消　国家の公認を取り消し、ディープステートに併合する。</div></td><td><div class=\"diff-line is-same\">八　公認取消　国家の公認を取り消し、ディープステートに併合する。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第8章 参加資格</ins></div></td><td rowspan=\"1\"><div class=\"diff-none\">（新設）</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第38条</ins></div></td><td rowspan=\"3\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①　成れ果てクラフトに参加していた者のうち雑談鯖に参加している者は、すべて参加者となる資格を有する。</ins></div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　前項の要件を満たさない者は、運営の過半数の賛成と人民の過半数の賛成を得ることで参加者となる資格を得ることができる。</ins></div></td></tr></tbody>\n</table>"
+   }
+  ]
+ },
+ "R0401002": {
+  "rule_id": "R0401002",
+  "repealed": true,
+  "repeal": {
+   "date_iso": "2025-06-19",
+   "by_number": "令和7年ルール第3号",
+   "by_id": "R0701003",
+   "date": "令和7年6月19日"
+  },
+  "versions": [
+   {
+    "vid": "R0401002",
+    "kind": "制定",
+    "by_number": "令和4年ルール第2号",
+    "title": "国家及び領土に関する3DS半分こするくらい仲良しクラフトルール附則",
+    "date_iso": "2022-09-25",
+    "date": "令和4年9月25日",
+    "end_iso": "2023-03-25",
+    "end": "令和5年3月25日",
+    "next_by_number": "令和5年ルール第1号",
+    "rule_name": "国家及び領土に関する3DS半分こするくらい仲良しクラフトルール附則",
+    "url": "/rule/R0401002/R0401002.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0501001",
+    "kind": "改正",
+    "by_number": "令和5年ルール第1号",
+    "title": "３ＤＳ半分こするくらい仲良しクラフトルール",
+    "date_iso": "2023-03-25",
+    "date": "令和5年3月25日",
+    "end_iso": "2025-06-19",
+    "end": "令和7年6月19日",
+    "next_by_number": "令和7年ルール第3号",
+    "rule_name": "国家及び領土に関するルール特例",
+    "url": "/rule/R0401002.html",
+    "latest": true,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和5年3月25日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和4年9月25日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">題名</div></td><td><div class=\"diff-line diff-heading is-same\">題名</div></td></tr><tr><td><div class=\"diff-line\">国家及び領土に関するルール<ins class=\"diff-mark\">特例</ins></div></td><td><div class=\"diff-line\">国家及び領土に関する<del class=\"diff-mark\">3DS半分こするくらい仲良しクラフト</del>ルール<del class=\"diff-mark\">附則</del></div></td></tr></tbody>\n</table>"
+   }
+  ]
+ },
+ "R0401003": {
+  "rule_id": "R0401003",
+  "repealed": true,
+  "repeal": {
+   "date_iso": "2026-08-27",
+   "by_number": "令和8年ルール第3号",
+   "by_id": "R0801003",
+   "date": "令和8年8月27日"
+  },
+  "versions": [
+   {
+    "vid": "R0401003",
+    "kind": "制定",
+    "by_number": "令和4年ルール第3号",
+    "title": "旧ボーダー外の開発計画に関する3DS半分こするくらい仲良しクラフトルール附則",
+    "date_iso": "2022-09-25",
+    "date": "令和4年9月25日",
+    "end_iso": "2022-10-10",
+    "end": "令和4年10月10日",
+    "next_by_number": "令和4年ルール第5号",
+    "rule_name": "旧ボーダー外の開発計画に関する3DS半分こするくらい仲良しクラフトルール附則",
+    "url": "/rule/R0401003/R0401003.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0401005",
+    "kind": "改正",
+    "by_number": "令和4年ルール第5号",
+    "title": "旧ボーダー外の開発計画に関する3DS半分こするくらい仲良しクラフトルール附則の一部を改正するルール",
+    "date_iso": "2022-10-10",
+    "date": "令和4年10月10日",
+    "end_iso": "2023-03-25",
+    "end": "令和5年3月25日",
+    "next_by_number": "令和5年ルール第1号",
+    "rule_name": "旧ボーダー外の開発計画に関する3DS半分こするくらい仲良しクラフトルール附則",
+    "url": "/rule/R0401003/R0401005.html",
+    "latest": false,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和4年10月10日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和4年9月25日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第1条</div></td><td><div class=\"diff-line diff-heading is-same\">第1条</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">①</ins>　令和四年九月二十五日零時<ins class=\"diff-mark\">零分</ins>から令和四年九月二十七日二十四時<ins class=\"diff-mark\">零分</ins>までを、旧ボーダー外に関する<ins class=\"diff-mark\">第一次</ins>特例期間とする。</div></td><td><div class=\"diff-line\">　令和四年九月二十五日零時から令和四年九月二十七日二十四時までを、旧ボーダー外に関する特例期間とする。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">②　令和四年九月二十八日零時零分から令和四年十月八日二十四時零分までを、旧ボーダー外に関する第二次特例期間とする。</ins></div></td><td><div class=\"diff-none\">（新設）</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第2条</div></td><td><div class=\"diff-line diff-heading is-same\">第2条</div></td></tr><tr><td><div class=\"diff-line\">　<ins class=\"diff-mark\">第一次</ins>特例期間中、旧ボーダー外の陸地は全てディープステート領とする。</div></td><td><div class=\"diff-line\">　特例期間中、旧ボーダー外の陸地は全てディープステート領とする。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第3条</div></td><td><div class=\"diff-line diff-heading is-same\">第3条</div></td></tr><tr><td><div class=\"diff-line\">　<ins class=\"diff-mark\">第一次</ins>特例期間中、旧ボーダー外での建築については三人以上の運営の許可を必要とする。</div></td><td><div class=\"diff-line\">　特例期間中、旧ボーダー外での建築については三人以上の運営の許可を必要とする。</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第4条</div></td><td><div class=\"diff-line diff-heading is-same\">第4条</div></td></tr><tr><td><div class=\"diff-line\">①　<ins class=\"diff-mark\">第一次及び第二次</ins>特例期間中、各参加者は旧ボーダー外に希望する開発計画についてDiscord鯖の専用チャンネルに示し、議論を行う。</div></td><td><div class=\"diff-line\">①　特例期間中、各参加者は旧ボーダー外に希望する開発計画についてDiscord鯖の専用チャンネルに示し、議論を行う。</div></td></tr><tr><td><div class=\"diff-line is-same\">②　前項で定めた会議で各参加者の旧ボーダー外での開発計画を決定する。この会議で決定した事項は法的拘束力を持つ。</div></td><td><div class=\"diff-line is-same\">②　前項で定めた会議で各参加者の旧ボーダー外での開発計画を決定する。この会議で決定した事項は法的拘束力を持つ。</div></td></tr><tr><td><div class=\"diff-line is-same\">③　前項で定めた会議で、二十五万平方ブロックを超える土地の開発計画を提出してはならない。</div></td><td><div class=\"diff-line is-same\">③　前項で定めた会議で、二十五万平方ブロックを超える土地の開発計画を提出してはならない。</div></td></tr><tr><td><div class=\"diff-line is-same\">④　砂漠、メサなど運営が特に重要と認めた区域は開発計画を提出することができない。</div></td><td><div class=\"diff-line is-same\">④　砂漠、メサなど運営が特に重要と認めた区域は開発計画を提出することができない。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">⑤　参加者は、第一次特例期間中に提出された開発計画と重複する地域を第二次特例期間中に開発計画として申請してはならない。</ins></div></td><td><div class=\"diff-none\">（新設）</div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第5条</div></td><td><div class=\"diff-line diff-heading is-same\">第5条</div></td></tr><tr><td><div class=\"diff-line\">①　<ins class=\"diff-mark\">第一次</ins>特例期間終了後は、全域を参加者共同開発地域とする。</div></td><td><div class=\"diff-line\">①　特例期間終了後は、全域を参加者共同開発地域とする。</div></td></tr><tr><td><div class=\"diff-line\">②　<ins class=\"diff-mark\">第一次及び第二次</ins>特例期間終了後、参加者は第四条で定めた会議で決定した自らの開発計画の範囲で排他的に建築、採掘等の活動を行うことができる。</div></td><td><div class=\"diff-line\">②　特例期間終了後、参加者は第四条で定めた会議で決定した自らの開発計画の範囲で排他的に建築、採掘等の活動を行うことができる。</div></td></tr><tr><td><div class=\"diff-line\">③　<ins class=\"diff-mark\">第一次</ins>特例期間終了後、参加者は第四条で定めた会議で決定した開発計画を除く範囲で自由に建築、採掘等の活動を行うことができる。</div></td><td><div class=\"diff-line\">③　特例期間終了後、参加者は第四条で定めた会議で決定した開発計画を除く範囲で自由に建築、採掘等の活動を行うことができる。</div></td></tr><tr><td><div class=\"diff-line is-same\">④　砂漠、メサなど運営が特に重要と認めた区域はディープステート領とし、当該区域での建築、採掘等の活動については三人以上の運営の許可を必要とする。</div></td><td><div class=\"diff-line is-same\">④　砂漠、メサなど運営が特に重要と認めた区域はディープステート領とし、当該区域での建築、採掘等の活動については三人以上の運営の許可を必要とする。</div></td></tr></tbody>\n</table>"
+   },
+   {
+    "vid": "R0501001",
+    "kind": "改正",
+    "by_number": "令和5年ルール第1号",
+    "title": "３ＤＳ半分こするくらい仲良しクラフトルール",
+    "date_iso": "2023-03-25",
+    "date": "令和5年3月25日",
+    "end_iso": "2023-09-08",
+    "end": "令和5年9月8日",
+    "next_by_number": "令和5年ルール第3号",
+    "rule_name": "旧ボーダー外の開発計画に関するルール特例",
+    "url": "/rule/R0401003/R0501001.html",
+    "latest": false,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和5年3月25日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和4年10月10日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">題名</div></td><td><div class=\"diff-line diff-heading is-same\">題名</div></td></tr><tr><td><div class=\"diff-line\">旧ボーダー外の開発計画に関するルール<ins class=\"diff-mark\">特例</ins></div></td><td><div class=\"diff-line\">旧ボーダー外の開発計画に関する<del class=\"diff-mark\">3DS半分こするくらい仲良しクラフト</del>ルール<del class=\"diff-mark\">附則</del></div></td></tr></tbody>\n</table>"
+   },
+   {
+    "vid": "R0501003",
+    "kind": "改正",
+    "by_number": "令和5年ルール第3号",
+    "title": "旧ボーダー外の開発計画に関するルール特例の一部を改正するルール",
+    "date_iso": "2023-09-08",
+    "date": "令和5年9月8日",
+    "end_iso": "2026-08-27",
+    "end": "令和8年8月27日",
+    "next_by_number": "令和8年ルール第3号",
+    "rule_name": "旧ボーダー外の開発計画に関するルール特例",
+    "url": "/rule/R0401003.html",
+    "latest": true,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和5年9月8日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和5年3月25日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">第5条</div></td><td><div class=\"diff-line diff-heading is-same\">第5条</div></td></tr><tr><td><div class=\"diff-line\">①　第一次特例期間終了後は、<ins class=\"diff-mark\">旧ボーダー外の</ins>全域を参加者共同開発地域とする。</div></td><td><div class=\"diff-line\">①　第一次特例期間終了後は、全域を参加者共同開発地域とする。</div></td></tr><tr><td><div class=\"diff-line\">②　第一次及び第二次特例期間終了後、第四条で定めた会議で自らの開発計画の範囲<ins class=\"diff-mark\">（以下、「個人開発領」という。）を定めた参加者（以下、「開発権者」という。）は個人開発領において</ins>排他的に建築<ins class=\"diff-mark\">及び</ins>採掘を行うことができる。<ins class=\"diff-mark\">ただし、開発権者でない参加者が宝の地図を用いて個人開発領内の宝箱を収集するときは、開発権者は当該収集に係る採掘を妨げることができない。</ins></div></td><td><div class=\"diff-line\">②　第一次及び第二次特例期間終了後、<del class=\"diff-mark\">参加者は</del>第四条で定めた会議で<del class=\"diff-mark\">決定した</del>自らの開発計画の範囲<del class=\"diff-mark\">で</del>排他的に建築<del class=\"diff-mark\">、</del>採掘<del class=\"diff-mark\">等の活動</del>を行うことができる。</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">③　個人開発領において、開発権者でない参加者は、鉄道、ネザーゲートその他公共の利益となる建築物で相当の必要性が認められるものの建築及び松明、ランタン、シーランタン、グロウストーンその他の光源となるブロックの設置については、開発権者の許可なくこれを行うことができる。ただし、開発権者は、当該建築が本人の許可なく行われたものであるときは、当該建築を行った者の許可なくこれを破壊することができる。</ins></div></td><td><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">④</ins>　第一次特例期間終了後、参加者は<ins class=\"diff-mark\">旧ボーダー内の個人</ins>開発<ins class=\"diff-mark\">領</ins>を除く<ins class=\"diff-mark\">領域において</ins>自由に建築、採掘<ins class=\"diff-mark\">その他ルールで認められた一切</ins>の活動を行うことができる。</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">③</del>　第一次特例期間終了後、参加者は<del class=\"diff-mark\">第四条で定めた会議で決定した</del>開発<del class=\"diff-mark\">計画</del>を除く<del class=\"diff-mark\">範囲で</del>自由に建築、採掘<del class=\"diff-mark\">等</del>の活動を行うことができる。</div></td></tr><tr><td><div class=\"diff-none\">（削除）</div></td><td><div class=\"diff-line\"><del class=\"diff-mark\">④　砂漠、メサなど運営が特に重要と認めた区域はディープステート領とし、当該区域での建築、採掘等の活動については三人以上の運営の許可を必要とする。</del></div></td></tr></tbody>\n<tbody><tr><td><div class=\"diff-line diff-heading\"><ins class=\"diff-mark\">第6条</ins></div></td><td rowspan=\"2\"><div class=\"diff-none\">（新設）</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">　砂漠、メサなど運営が特に重要と認めた区域はディープステート領とし、当該区域での建築、採掘等の活動については三人以上の運営の許可を必要とする。</ins></div></td></tr></tbody>\n</table>"
+   }
+  ]
+ },
+ "R0501001": {
+  "rule_id": "R0501001",
+  "repealed": true,
+  "repeal": {
+   "date_iso": "2025-06-19",
+   "by_number": "令和7年ルール第1号",
+   "by_id": "R0701001",
+   "date": "令和7年6月19日"
+  },
+  "versions": [
+   {
+    "vid": "R0501001",
+    "kind": "制定",
+    "by_number": "令和5年ルール第1号",
+    "title": "３ＤＳ半分こするくらい仲良しクラフトルール",
+    "date_iso": "2023-03-25",
+    "date": "令和5年3月25日",
+    "end_iso": "2024-01-05",
+    "end": "令和6年1月5日",
+    "next_by_number": "令和6年ルール第1号",
+    "rule_name": "３ＤＳ半分こするくらい仲良しクラフトルール",
+    "url": "/rule/R0501001/R0501001.html",
+    "latest": false,
+    "compare_html": null
+   },
+   {
+    "vid": "R0601001",
+    "kind": "改正",
+    "by_number": "令和6年ルール第1号",
+    "title": "３ＤＳ半分こするくらい仲良しクラフトルールの一部を改正するルール",
+    "date_iso": "2024-01-05",
+    "date": "令和6年1月5日",
+    "end_iso": "2025-06-19",
+    "end": "令和7年6月19日",
+    "next_by_number": "令和7年ルール第1号",
+    "rule_name": "３ＤＳ半分こするくらい仲良しクラフトルール",
+    "url": "/rule/R0501001.html",
+    "latest": true,
+    "compare_html": "<table class=\"diff-table\">\n<thead><tr><th scope=\"col\">改正後<span class=\"diff-date\">（令和6年1月5日 施行）</span></th><th scope=\"col\">改正前<span class=\"diff-date\">（令和5年3月25日 施行）</span></th></tr></thead>\n<tbody><tr><td><div class=\"diff-line diff-heading is-same\">別表第一（第四十一条関係）</div></td><td><div class=\"diff-line diff-heading is-same\">別表第一（第四十一条関係）</div></td></tr><tr><td><div class=\"diff-line is-same\">鰹節共和国</div></td><td><div class=\"diff-line is-same\">鰹節共和国</div></td></tr><tr><td><div class=\"diff-line is-same\">クォーツ族</div></td><td><div class=\"diff-line is-same\">クォーツ族</div></td></tr><tr><td><div class=\"diff-line is-same\">ジストーリオ国家連邦</div></td><td><div class=\"diff-line is-same\">ジストーリオ国家連邦</div></td></tr><tr><td><div class=\"diff-line is-same\">ソビエト社会主義共和国連邦</div></td><td><div class=\"diff-line is-same\">ソビエト社会主義共和国連邦</div></td></tr><tr><td><div class=\"diff-line is-same\">ヘルヴェティア中立同盟</div></td><td><div class=\"diff-line is-same\">ヘルヴェティア中立同盟</div></td></tr><tr><td><div class=\"diff-line is-same\">瑠莉学術公国</div></td><td><div class=\"diff-line is-same\">瑠莉学術公国</div></td></tr><tr><td><div class=\"diff-line is-same\">瑠璃連邦</div></td><td><div class=\"diff-line is-same\">瑠璃連邦</div></td></tr><tr><td><div class=\"diff-line\"><ins class=\"diff-mark\">大カワムーラ連邦</ins></div></td><td><div class=\"diff-none\">（新設）</div></td></tr></tbody>\n</table>"
+   }
+  ]
+ }
+}
