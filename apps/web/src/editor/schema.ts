@@ -73,6 +73,8 @@ export const ArticleNode = Node.create({
       num: { default: { main: 1, branches: [] } },
       general: { default: false },
       deleted: { default: false },
+      /** 「削除」として残したときの元の内容（削除を取り消すときに使う。Markdown には出さない） */
+      deletedContent: { default: null },
     };
   },
   parseHTML() {
@@ -84,6 +86,8 @@ export const ArticleNode = Node.create({
       {
         class: 'article' + (node.attrs.deleted ? ' is-deleted' : ''),
         'data-general': node.attrs.general ? 'true' : null,
+        // 削除した条は紙面では文言を編集できない
+        contenteditable: node.attrs.deleted ? 'false' : null,
       },
       0,
     ];

@@ -3,6 +3,8 @@
 import Collaboration from '@tiptap/extension-collaboration';
 import { EditorContent, useEditor } from '@tiptap/react';
 import { useEffect, useRef, useState, type MouseEvent } from 'react';
+import { getCommand } from '../commands/registry.ts';
+import { useCommandContext } from '../commands/useCommandContext.ts';
 import { LawTitle } from '../render/RuleView.tsx';
 import { useApp, type OpenEntry } from '../state/store.ts';
 import { Menu, MiniToolbar, type MenuItem } from '../ui/common/Menu.tsx';
@@ -30,6 +32,11 @@ export function RuleEditorView({
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [menu, setMenu] = useState<{ x: number; y: number; items: MenuItem[] } | null>(null);
   const [mini, setMini] = useState<DOMRect | null>(null);
+  const ctx = useCommandContext();
+  const insertRef = useRef(() => {});
+  useEffect(() => {
+    insertRef.current = () => getCommand('article-after').run(ctx);
+  });
 
   const editor = useEditor(
     {
@@ -39,7 +46,11 @@ export function RuleEditorView({
           fragment: entry.fragment,
           yUndoOptions: { undoManager: entry.undo },
         }),
-        RuleEditing.configure({ notify: showToast, getUndoManager: () => entry.undo }),
+        RuleEditing.configure({
+          notify: showToast,
+          getUndoManager: () => entry.undo,
+          onInsertArticle: () => insertRef.current(),
+        }),
       ],
       editable: !entry.readOnly,
       editorProps: {
@@ -122,7 +133,9 @@ export function RuleEditorView({
           ? '一般向けを解除'
           : '一般向け条文にする',
       },
-      { type: 'command', id: 'art-del', label: 'この条を削除…' },
+      articleCursor(editor.state)?.article.attrs.deleted
+        ? { type: 'command', id: 'art-undel' }
+        : { type: 'command', id: 'art-del', label: 'この条を削除…' },
     ];
     setMenu({ x: e.clientX, y: e.clientY, items });
   };

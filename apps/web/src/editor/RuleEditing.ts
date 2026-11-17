@@ -22,6 +22,8 @@ export type RuleEditingOptions = {
   /** 利用者向けの知らせ（レベルを変えられないときなど） */
   notify: (message: string) => void;
   getUndoManager: () => UndoManager | null;
+  /** Ctrl+Enter（後に条を挿入） */
+  onInsertArticle: () => void;
 };
 
 /** 構造の変更は「元に戻す」の1回分として区切る */
@@ -46,7 +48,7 @@ export const RuleEditing = Extension.create<RuleEditingOptions>({
   name: 'ruleEditing',
 
   addOptions() {
-    return { notify: () => {}, getUndoManager: () => null };
+    return { notify: () => {}, getUndoManager: () => null, onInsertArticle: () => {} };
   },
 
   addProseMirrorPlugins() {
@@ -77,6 +79,10 @@ export const RuleEditing = Extension.create<RuleEditingOptions>({
       'Alt-Shift-ArrowRight': run(demote),
       'Alt-Shift-ArrowLeft': run(promote),
       Backspace: run(backspaceAtLineStart),
+      'Mod-Enter': () => {
+        this.options.onInsertArticle();
+        return true;
+      },
     };
   },
 });

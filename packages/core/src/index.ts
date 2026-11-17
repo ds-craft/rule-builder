@@ -8,3 +8,4 @@ export * from './markdown/inline.ts';
 export * from './markdown/frontMatter.ts';
 export * from './markdown/parse.ts';
 export * from './markdown/serialize.ts';
+export * from './model/ops.ts';

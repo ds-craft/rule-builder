@@ -2,7 +2,7 @@
 // まだ中身のない操作は enabled が false を返し、無効表示になる（後のフェーズで中身を入れる）。
 
 import { serializeRule } from '@rule-builder/core';
-import type { EditorState } from '@tiptap/pm/state';
+import type { EditorState, Transaction } from '@tiptap/pm/state';
 import {
   ArrowDown,
   ArrowLeftRight,
@@ -40,11 +40,34 @@ import {
   type Result,
 } from '../editor/commands.ts';
 import { runResult } from '../editor/RuleEditing.ts';
+import {
+  addSupplementaryLine,
+  currentArticle,
+  hasPreamble,
+  insertDivision,
+  insertPreamble,
+} from '../editor/structure.ts';
+import {
+  moveCurrentArticle,
+  openDeleteArticleDialog,
+  openInsertArticleDialog,
+  openRenumberDialog,
+} from '../ui/common/structureDialogs.tsx';
 import { ZOOM_MAX, ZOOM_MIN } from '../state/store.ts';
 import { openMarkdownDialog } from '../ui/common/dialogs.tsx';
 import type { Command, CommandContext } from './types.ts';
 
 const never = () => false;
+
+/** 構造の変更（1回の「元に戻す」で戻る） */
+const structural = (f: (s: EditorState) => Transaction) => (ctx: CommandContext) => {
+  const e = ctx.editor;
+  if (!e) return;
+  ctx.entry?.undo.stopCapturing();
+  e.view.dispatch(f(e.state));
+  ctx.entry?.undo.stopCapturing();
+  e.commands.focus();
+};
 
 /** 編集中のエディタに対する操作 */
 const edit = (f: (s: EditorState) => Result | null) => (ctx: CommandContext) => {
@@ -55,6 +78,10 @@ const edit = (f: (s: EditorState) => Result | null) => (ctx: CommandContext) => 
 };
 
 const inArticle = (ctx: CommandContext) => !!ctx.editor && !!articleCursor(ctx.editor.state);
+const inLiveArticle = (ctx: CommandContext) =>
+  !!ctx.editor &&
+  !!articleCursor(ctx.editor.state) &&
+  !currentArticle(ctx.editor.state)?.node.attrs.deleted;
 const lineKind = (ctx: CommandContext) => (ctx.editor ? currentLineKind(ctx.editor.state) : null);
 const inLine = (ctx: CommandContext) => {
   const k = lineKind(ctx);
@@ -148,7 +175,7 @@ const list: Command[] = [
     label: '一般向け',
     icon: Users,
     tip: '一般向け条文にする（ポータルの「一般向け条文のみ表示」で表示される）',
-    enabled: inArticle,
+    enabled: inLiveArticle,
     pressed: (ctx) => !!(ctx.editor && articleCursor(ctx.editor.state)?.article.attrs.general),
     run: (ctx) => {
       const c = ctx.editor && articleCursor(ctx.editor.state);
@@ -160,28 +187,95 @@ const list: Command[] = [
     },
   },
 
-  // ---- 挿入（Phase 4） ----
+  // ---- 挿入 ----
   {
     id: 'article-after',
     label: '条を挿入',
     icon: FilePlus2,
-    tip: '条を挿入',
+    tip: '後に条を挿入',
     shortcut: 'Ctrl+Enter',
-    enabled: never,
-    run() {},
+    enabled: (ctx) => !!ctx.editor,
+    run: (ctx) => openInsertArticleDialog(ctx, 'after'),
   },
-  { id: 'article-before', label: '前に条を挿入', icon: FilePlus2, enabled: never, run() {} },
-  { id: 'chapter', label: '章', icon: '章', tip: '章を挿入', enabled: never, run() {} },
-  { id: 'section', label: '節', icon: '節', tip: '節を挿入', enabled: never, run() {} },
-  { id: 'preamble', label: '前文', icon: '前', tip: '前文を追加', enabled: never, run() {} },
-  { id: 'supp', label: '附則', icon: '附', tip: '附則に行を追加', enabled: never, run() {} },
+  {
+    id: 'article-before',
+    label: '前に条を挿入',
+    icon: FilePlus2,
+    enabled: inArticle,
+    run: (ctx) => openInsertArticleDialog(ctx, 'before'),
+  },
+  {
+    id: 'chapter',
+    label: '章',
+    icon: '章',
+    tip: '章を挿入',
+    enabled: (ctx) => !!ctx.editor,
+    run: structural((s) => insertDivision(s, 'chapter')),
+  },
+  {
+    id: 'section',
+    label: '節',
+    icon: '節',
+    tip: '節を挿入',
+    enabled: (ctx) => !!ctx.editor,
+    run: structural((s) => insertDivision(s, 'section')),
+  },
+  {
+    id: 'preamble',
+    label: '前文',
+    icon: '前',
+    tip: '前文を追加',
+    enabled: (ctx) => !!ctx.editor && !hasPreamble(ctx.editor.state.doc),
+    run: structural(insertPreamble),
+  },
+  {
+    id: 'supp',
+    label: '附則',
+    icon: '附',
+    tip: '附則に行を追加',
+    enabled: (ctx) => !!ctx.editor,
+    run: structural(addSupplementaryLine),
+  },
+  // 条文へのリンク（Phase 7）
   { id: 'link', label: '条文へのリンク', icon: Link, shortcut: 'Ctrl+K', enabled: never, run() {} },
 
-  // ---- 条のツール（Phase 4） ----
-  { id: 'art-up', label: '上へ移動', icon: ArrowUp, enabled: never, run() {} },
-  { id: 'art-down', label: '下へ移動', icon: ArrowDown, enabled: never, run() {} },
-  { id: 'art-renum', label: '条番号の変更', icon: Hash, enabled: never, run() {} },
-  { id: 'art-del', label: 'この条を削除', icon: Trash2, enabled: never, run() {} },
+  // ---- 条のツール ----
+  {
+    id: 'art-up',
+    label: '上へ移動',
+    icon: ArrowUp,
+    enabled: inArticle,
+    run: (ctx) => moveCurrentArticle(ctx, -1),
+  },
+  {
+    id: 'art-down',
+    label: '下へ移動',
+    icon: ArrowDown,
+    enabled: inArticle,
+    run: (ctx) => moveCurrentArticle(ctx, 1),
+  },
+  {
+    id: 'art-renum',
+    label: '条番号の変更',
+    icon: Hash,
+    enabled: (ctx) =>
+      inArticle(ctx) && !!ctx.editor && !!currentArticle(ctx.editor.state)?.node.attrs.num,
+    run: openRenumberDialog,
+  },
+  {
+    id: 'art-del',
+    label: 'この条を削除',
+    icon: Trash2,
+    enabled: inArticle,
+    run: openDeleteArticleDialog,
+  },
+  {
+    id: 'art-undel',
+    label: '削除を取り消す',
+    icon: Undo2,
+    enabled: (ctx) => !!ctx.editor && !!currentArticle(ctx.editor.state)?.node.attrs.deleted,
+    run: openDeleteArticleDialog,
+  },
 
   // ---- 校閲 ----
   {

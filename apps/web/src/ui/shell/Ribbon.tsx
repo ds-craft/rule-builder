@@ -66,7 +66,7 @@ const LAYOUT: Record<RibbonTab, Group[]> = {
     { label: '移動', kind: 'column', buttons: [sm('art-up'), sm('art-down')] },
     { label: '番号', kind: 'buttons', buttons: [lg('art-renum')] },
     { label: '設定', kind: 'buttons', buttons: [lg('general')] },
-    { label: '削除', kind: 'buttons', buttons: [lg('art-del')] },
+    { label: '削除', kind: 'buttons', buttons: [lg('art-del'), lg('art-undel')] },
   ],
 };
 

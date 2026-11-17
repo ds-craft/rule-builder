@@ -2,7 +2,7 @@
 // 開いている文書（entries）と、画面の表示状態（ui）を持つ。
 // Phase 5 で改正案（1件＝1つの Y.Doc）にするまでは、公開中のルールをこのブラウザの中だけで編集する（保存しない）。
 
-import type { RuleDoc, TopBlock } from '@rule-builder/core';
+import type { Renumbering, RuleDoc, TopBlock } from '@rule-builder/core';
 import type * as Y from 'yjs';
 import type { KeptUndoManager } from '../editor/ydoc.ts';
 import { create } from 'zustand';
@@ -51,6 +51,9 @@ export type AppState = {
   current: number;
   ui: UiState;
   toast: Toast | null;
+  /** 番号が変わった条の対応表（文書ごと・操作ごと）。参照の確認（Phase 7）で使う */
+  renumberLog: Record<string, Renumbering[][]>;
+  logRenumbering: (key: string, list: Renumbering[]) => void;
   /** 開いている文書を足し、その位置を返す（同じルールがあればそれを使う） */
   openEntry: (entry: OpenEntry) => number;
   closeAll: () => void;
@@ -84,6 +87,13 @@ export const useApp = create<AppState>()((set, get) => ({
   current: -1,
   ui: initialUi,
   toast: null,
+  renumberLog: {},
+  logRenumbering(key, list) {
+    if (list.length === 0) return;
+    set((s) => ({
+      renumberLog: { ...s.renumberLog, [key]: [...(s.renumberLog[key] ?? []), list] },
+    }));
+  },
   openEntry(entry) {
     const { entries } = get();
     const i = entries.findIndex((e) => e.ruleId === entry.ruleId && e.sha === entry.sha);
