@@ -191,3 +191,14 @@
     break-inside: avoid;
   }
 }
+
+/* ---- キーボードで操作しているときのフォーカスの見た目（Phase 8） ---- */
+:where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--blue-900);
+  outline-offset: 2px;
+}
+.titlebar :focus-visible,
+.backstage nav :focus-visible,
+.rtabs button.file:focus-visible {
+  outline-color: #fff;
+}

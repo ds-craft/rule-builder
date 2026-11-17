@@ -1,13 +1,16 @@
 // リボン：タブ・グループ・大小のボタン・ギャラリー・コンテキストタブ（条のツール）。
 // ボタンはコマンド定義から描画する。
 
+import { formatArticleNum, type ArticleNum } from '@rule-builder/core';
 import type { ReactNode } from 'react';
+import { articleCursor } from '../../editor/commands.ts';
 import { useNavigate } from 'react-router';
 import { commandLabel, commandTip, getCommand, isEnabled } from '../../commands/registry.ts';
 import type { CommandContext } from '../../commands/types.ts';
 import { useCommandContext } from '../../commands/useCommandContext.ts';
 import type { RibbonTab } from '../../state/store.ts';
 import { Icon } from '../common/Icon.tsx';
+import { moveFocus } from '../common/keyNav.ts';
 
 type Btn = { cmd: string; size: 'lg' | 'sm'; label?: string };
 type Group =
@@ -134,17 +137,20 @@ function Gallery({
   );
 }
 
-export function Ribbon({
-  articleLabel,
-  currentKind = null,
-  singleParagraph = false,
-}: {
-  /** カーソルが条の中にあるときの条番号（条のツールのタブを出す） */
-  articleLabel?: string | null;
-  currentKind?: string | null;
-  singleParagraph?: boolean;
-}) {
+const KIND_KEY: Record<string, string> = { kou: 'p', gou: 'i', saibun: 's' };
+
+export function Ribbon() {
   const ctx = useCommandContext();
+  const cursor = ctx.editor ? articleCursor(ctx.editor.state) : null;
+  /** カーソルが条の中にあるときの条番号（条のツールのタブを出す） */
+  const articleLabel = cursor?.article.attrs.num
+    ? formatArticleNum(cursor.article.attrs.num as ArticleNum)
+    : cursor
+      ? '条'
+      : null;
+  const kind = cursor && cursor.index >= 0 ? cursor.infos[cursor.index]!.kind : null;
+  const currentKind = KIND_KEY[kind ?? ''] ?? null;
+  const singleParagraph = !!cursor && cursor.infos.filter((i) => i.kind === 'kou').length <= 1;
   const navigate = useNavigate();
   const { ui, setUi } = ctx.app;
   const tab: RibbonTab = ui.tab === 'article' && !articleLabel ? 'home' : ui.tab;
@@ -175,44 +181,69 @@ export function Ribbon({
   ));
 
   return (
-    <div className={'ribbon' + (ctx.isMobile && !ui.ribbonOpen ? ' collapsed' : '')}>
-      <div className="rtabs" role="tablist" aria-label="リボン">
+    <div
+      className={'ribbon' + (ctx.isMobile && !ui.ribbonOpen ? ' collapsed' : '')}
+      role="region"
+      aria-label="リボン"
+    >
+      <div className="rtabs">
         <button type="button" className="file" onClick={() => void navigate('/file/info')}>
           ファイル
         </button>
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            type="button"
-            role="tab"
-            aria-selected={tab === t.key}
-            className={tab === t.key ? 'active' : ''}
-            onMouseDown={(e) => e.preventDefault()}
-            onClick={() => selectTab(t.key)}
-          >
-            {t.label}
-          </button>
-        ))}
-        {articleLabel && (
-          <span className="ctx-wrap">
-            <span className="ctx-cap">{articleLabel}</span>
+        <div
+          role="tablist"
+          aria-label="リボン"
+          className="rtabs-list"
+          onKeyDown={(e) => {
+            // ←→ でタブを移り、そのタブを選ぶ
+            if (moveFocus(e, '[role="tab"]')) (document.activeElement as HTMLElement).click();
+          }}
+        >
+          {TABS.map((t) => (
             <button
+              key={t.key}
               type="button"
               role="tab"
-              aria-selected={tab === 'article'}
-              className={'ctx' + (tab === 'article' ? ' active' : '')}
+              id={`rtab-${t.key}`}
+              aria-selected={tab === t.key}
+              aria-controls="ribbon-body"
+              tabIndex={tab === t.key ? 0 : -1}
+              className={tab === t.key ? 'active' : ''}
               onMouseDown={(e) => e.preventDefault()}
-              onClick={() => selectTab('article')}
+              onClick={() => selectTab(t.key)}
             >
-              条のツール
+              {t.label}
             </button>
-          </span>
-        )}
+          ))}
+          {articleLabel && (
+            <span className="ctx-wrap" role="none">
+              <span className="ctx-cap" aria-hidden="true">
+                {articleLabel}
+              </span>
+              <button
+                type="button"
+                role="tab"
+                id="rtab-article"
+                aria-label={`条のツール（${articleLabel}）`}
+                aria-selected={tab === 'article'}
+                aria-controls="ribbon-body"
+                tabIndex={tab === 'article' ? 0 : -1}
+                className={'ctx' + (tab === 'article' ? ' active' : '')}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => selectTab('article')}
+              >
+                条のツール
+              </button>
+            </span>
+          )}
+        </div>
       </div>
       <div
+        id="ribbon-body"
         className={'rbody' + (tab === 'article' ? ' ctx' : '')}
         role="toolbar"
-        aria-label="リボンのボタン"
+        aria-labelledby={`rtab-${tab}`}
+        onKeyDown={(e) => moveFocus(e, 'button')}
       >
         {body}
       </div>

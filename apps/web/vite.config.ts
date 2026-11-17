@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import type { Plugin } from 'postcss';
 import prefixer from 'postcss-prefix-selector';
 import { defineConfig } from 'vite';
+import { VitePWA } from 'vite-plugin-pwa';
 
 /** portal 由来の CSS を効かせる範囲（紙面の要素）。 */
 export const PORTAL_SCOPE = '.rb-portal';
@@ -38,10 +39,65 @@ const dropPortalPrint: Plugin = {
   },
 };
 
+// PWA（Phase 8）：初回読み込み後はオフラインでも編集・出力できるよう、画面のファイルを Service Worker に置く。
+// 改正案は IndexedDB にあるので、ネットワークが無くても開ける。ルールの取得（GitHub）は届くときだけ。
+const pwa = VitePWA({
+  registerType: 'autoUpdate',
+  injectRegister: 'script-defer',
+  includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+  manifest: {
+    name: 'ルール編集（rule-builder）',
+    short_name: 'ルール編集',
+    description: 'ルールの改正案を作成・編集します',
+    lang: 'ja',
+    start_url: '/',
+    scope: '/',
+    display: 'standalone',
+    theme_color: '#0017c1',
+    background_color: '#ffffff',
+    icons: [
+      { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
+      { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+      { src: 'icon-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+    ],
+  },
+  workbox: {
+    globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+    // HashRouter なので、どの URL も index.html を返せばよい
+    navigateFallback: '/index.html',
+    runtimeCaching: [
+      {
+        // 文字（Noto Sans JP）
+        urlPattern: ({ url }) =>
+          url.origin === 'https://fonts.googleapis.com' ||
+          url.origin === 'https://fonts.gstatic.com',
+        handler: 'StaleWhileRevalidate',
+        options: { cacheName: 'fonts', expiration: { maxEntries: 60 } },
+      },
+      {
+        // SHA を指定したルールの本文は変わらない
+        urlPattern: ({ url }) => url.origin === 'https://raw.githubusercontent.com',
+        handler: 'CacheFirst',
+        options: { cacheName: 'rules-raw', expiration: { maxEntries: 300 } },
+      },
+      {
+        // ルールの一覧・main の SHA は新しいものを優先し、届かなければ前回の結果
+        urlPattern: ({ url }) => url.origin === 'https://api.github.com',
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: 'rules-api',
+          networkTimeoutSeconds: 5,
+          expiration: { maxEntries: 50 },
+        },
+      },
+    ],
+  },
+});
+
 // 公開先は https://builder.ds2.uk/（GitHub Pages のカスタムドメイン）
 export default defineConfig({
   base: '/',
-  plugins: [react()],
+  plugins: [react(), pwa],
   css: { postcss: { plugins: [dropPortalPrint, portalScope] } },
   test: {
     name: 'web',

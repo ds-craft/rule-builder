@@ -8,6 +8,7 @@ import {
   FolderOpen,
   House,
   Info,
+  LifeBuoy,
   Save,
   Upload,
   X,
@@ -25,8 +26,9 @@ import { PrintPage } from './PrintPage.tsx';
 import { SavePage } from './SavePage.tsx';
 import { NewPage } from './NewPage.tsx';
 import { OpenPage } from './OpenPage.tsx';
+import { HelpPage } from './HelpPage.tsx';
 
-type PageKey = 'home' | 'new' | 'open' | 'info' | 'save' | 'export' | 'print' | 'close';
+type PageKey = 'home' | 'new' | 'open' | 'info' | 'save' | 'export' | 'print' | 'help' | 'close';
 
 type PageDef = {
   key: PageKey;
@@ -47,6 +49,7 @@ const PAGES: (PageDef | '-')[] = [
   { key: 'export', icon: Upload, label: '書き出し', needsProposal: true },
   { key: 'print', icon: Columns2, label: '新旧対照表・印刷', needsProposal: true },
   '-',
+  { key: 'help', icon: LifeBuoy, label: 'ヘルプ', needsProposal: false },
   { key: 'close', icon: X, label: '閉じる', needsProposal: true },
 ];
 
@@ -139,7 +142,7 @@ export function FileScreen() {
             );
           })}
         </nav>
-        <div className="bs-body">
+        <main className="bs-body">
           {page === 'home' && <HomePage />}
           {page === 'new' && <NewPage />}
           {page === 'open' && <OpenPage />}
@@ -147,7 +150,8 @@ export function FileScreen() {
           {page === 'save' && <SavePage />}
           {page === 'export' && <ExportPage />}
           {page === 'print' && <PrintPage />}
-        </div>
+          {page === 'help' && <HelpPage />}
+        </main>
       </div>
     </>
   );

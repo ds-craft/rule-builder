@@ -322,6 +322,9 @@ pre.code {
   background: var(--ribbon);
   border-bottom: 1px solid var(--g200);
 }
+.rtabs-list {
+  display: contents;
+}
 .rtabs {
   display: flex;
   align-items: flex-end;
@@ -1439,6 +1442,10 @@ table.cmp td.none {
     width: 18px;
     height: 18px;
   }
+  .fab button:disabled {
+    color: var(--g600);
+    opacity: 0.45;
+  }
   .backstage {
     grid-template-columns: minmax(0, 1fr);
     grid-template-rows: auto minmax(0, 1fr);
@@ -1501,4 +1508,25 @@ table.cmp td.none {
     padding: 0;
     overflow: visible;
   }
+}
+
+/* ---- ヘルプ ---- */
+.help {
+  max-width: 760px;
+  line-height: 1.8;
+}
+.help ol {
+  padding-left: 1.4em;
+}
+.help li {
+  margin-bottom: 6px;
+}
+.help kbd {
+  font-family: inherit;
+  font-size: 12px;
+  border: 1px solid var(--g200);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 6px;
+  background: var(--g50);
 }

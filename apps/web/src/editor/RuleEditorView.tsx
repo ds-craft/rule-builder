@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { docAnchors } from './checks.ts';
 import { entryRuleId, lintRuleIndex, loadLinkIndex, useLinkIndex } from '../github/linkIndex.ts';
 import { useSettings } from '../state/settings.ts';
+import { isMobileNow } from '../ui/common/useIsMobile.ts';
 import { linkRangeAt, portalUrl } from '../ui/common/linkDialog.tsx';
 import { refreshLint } from './lint.ts';
 import { getCommand } from '../commands/registry.ts';
@@ -41,7 +42,8 @@ export function RuleEditorView({
   const [mini, setMini] = useState<DOMRect | null>(null);
   /** カーソルのあるリンク（飛び先を出し、変更・解除できる） */
   const [bubble, setBubble] = useState<{ rect: DOMRect; href: string } | null>(null);
-  const ctx = useCommandContext();
+  // 文字を打つたびに紙面を描き直さないよう、コマンドの文脈は描き直しのきっかけにしない
+  const ctx = useCommandContext(false);
   useEffect(() => {
     editorHandlers.insertArticle = () => getCommand('article-after').run(ctx);
     editorHandlers.link = () => {
@@ -91,6 +93,9 @@ export function RuleEditorView({
       ],
       editable: !entry.readOnly,
       editorProps: {
+        // スマホでは画面下のバーに隠れないよう、カーソルを下端から離して表示する
+        scrollMargin: isMobileNow() ? { top: 8, bottom: 96, left: 5, right: 5 } : 5,
+        scrollThreshold: isMobileNow() ? { top: 8, bottom: 96, left: 0, right: 0 } : 0,
         attributes: {
           class: 'rb-editor',
           spellcheck: 'false',

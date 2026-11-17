@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type ReactNode } from 're
 import { commandTip, getCommand, isEnabled } from '../../commands/registry.ts';
 import { useCommandContext } from '../../commands/useCommandContext.ts';
 import { Icon } from './Icon.tsx';
+import { moveFocus } from './keyNav.ts';
 
 export type MenuItem =
   | { type: 'command'; id: string; label?: string; disabled?: boolean }
@@ -59,7 +60,13 @@ export function Menu({
   }, []);
 
   return (
-    <div className="menu" role="menu" ref={ref} style={pos}>
+    <div
+      className="menu"
+      role="menu"
+      ref={ref}
+      style={pos}
+      onKeyDown={(e) => moveFocus(e, 'button', 'vertical')}
+    >
       {items.map((it, i) => {
         if (it.type === 'separator') return <hr key={i} />;
         if (it.type === 'heading') {
@@ -109,7 +116,13 @@ export function MiniToolbar({ rect, commands }: { rect: DOMRect; commands: strin
     });
   }, [rect]);
   return (
-    <div className="mini no-print" ref={ref} style={pos}>
+    <div
+      className="mini no-print"
+      role="toolbar"
+      aria-label="選んだ文字の操作"
+      ref={ref}
+      style={pos}
+    >
       {commands.map((id) => {
         const c = getCommand(id);
         return (

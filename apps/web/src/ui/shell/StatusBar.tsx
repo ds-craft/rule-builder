@@ -1,16 +1,29 @@
 // ステータスバー：カーソルの位置・件数・表示モード・拡大率。
 
 import { ArrowLeftRight, Eye, Pencil, SpellCheck } from 'lucide-react';
-import type { ReactNode } from 'react';
 import { getCommand, isEnabled } from '../../commands/registry.ts';
 import { useCommandContext } from '../../commands/useCommandContext.ts';
 import { useActiveEditor } from '../../editor/activeEditor.ts';
+import { changesKey } from '../../editor/changes.ts';
+import { cursorLocation } from '../../editor/commands.ts';
 import { checkCounts, useDismissed } from '../../editor/checks.ts';
 import { useLinkIndex } from '../../github/linkIndex.ts';
 import { ZOOM_MAX, ZOOM_MIN } from '../../state/store.ts';
 
-export function StatusBar({ location, summary }: { location: string; summary: ReactNode }) {
+export function StatusBar({ editing }: { editing: boolean }) {
   const ctx = useCommandContext();
+  const editor = ctx.editor;
+  const location = editing && editor ? cursorLocation(editor.state) : '—';
+  const op = ctx.entry?.op;
+  const changes = editor ? changesKey.getState(editor.state) : null;
+  const summary =
+    op === 'create'
+      ? '新規制定'
+      : op === 'repeal'
+        ? '廃止'
+        : changes
+          ? `変更 ${changes.articles.filter((x) => x).length + changes.removed}条`
+          : '改正';
   const { ui, setUi } = ctx.app;
   const run = (id: string) => {
     const c = getCommand(id);
@@ -24,7 +37,7 @@ export function StatusBar({ location, summary }: { location: string; summary: Re
   const counts = checkCounts();
   const lintable = ctx.entry?.op !== 'repeal';
   return (
-    <div className="status">
+    <div className="status" role="region" aria-label="ステータスバー">
       <span className="si" title="カーソルの位置">
         <b>{location}</b>
       </span>

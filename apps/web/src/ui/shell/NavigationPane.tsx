@@ -4,21 +4,38 @@ import { Search, X } from 'lucide-react';
 import { useMemo } from 'react';
 import { searchLines, tocItems, type LawSection } from '../../render/layout.ts';
 import { useApp } from '../../state/store.ts';
+import { useActiveEditor } from '../../editor/activeEditor.ts';
+import { changesKey } from '../../editor/changes.ts';
+
+/** 紙面の条ごとの変更の印。文字を打っても印が変わらなければ同じ配列を返す（目次を描き直さない） */
+function useArticleMarks(show: boolean): ('new' | 'changed' | null)[] | null {
+  const key = useActiveEditor((s) => {
+    const e = s.editor;
+    if (!show || !e || e.isDestroyed) return '';
+    const c = changesKey.getState(e.state);
+    return c ? c.articles.map((a) => a ?? '-').join(',') : '';
+  });
+  return useMemo(
+    () => (key ? key.split(',').map((a) => (a === '-' ? null : (a as 'new' | 'changed'))) : null),
+    [key],
+  );
+}
 
 export function NavigationPane({
   sections,
   onGoHeading,
   onGoLine,
   activeKey,
-  articleMarks = null,
+  showMarks = false,
 }: {
   sections: LawSection[];
   onGoHeading: (key: string) => void;
   onGoLine: (key: string) => void;
   activeKey?: string | null;
-  /** 条ごとの変更（文書の条の順）。改正中のルールで変更箇所を表示するとき */
-  articleMarks?: ('new' | 'changed' | null)[] | null;
+  /** 条ごとの変更の印（改正中のルールで変更箇所を表示するとき） */
+  showMarks?: boolean;
 }) {
+  const articleMarks = useArticleMarks(showMarks);
   const search = useApp((s) => s.ui.search);
   const setUi = useApp((s) => s.setUi);
   const toc = useMemo(() => tocItems(sections), [sections]);

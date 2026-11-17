@@ -62,6 +62,11 @@ function buildDecorations(doc: PMNode): DecorationSet {
         const infos = articleLineInfos(lineKindsOf(block));
         const num = block.attrs.num as ArticleNum | null;
         const deleted = !!block.attrs.deleted;
+        // 読み上げ用の名前（「第3条（目的）」）
+        const caption = block.firstChild?.textContent ?? '';
+        const name =
+          (articleLabel(num) || '条') + (deleted ? '　削除' : caption ? `（${caption}）` : '');
+        decos.push(line(pos, block, { 'aria-label': name }));
         let i = 0;
         block.forEach((child, childOffset) => {
           const cpos = pos + 1 + childOffset;
@@ -74,7 +79,13 @@ function buildDecorations(doc: PMNode): DecorationSet {
                 child,
                 deleted
                   ? { 'data-no': `${label}　削除` }
-                  : marks(child, label + '（', '見出しを入力'),
+                  : {
+                      ...marks(child, label + '（', '見出しを入力'),
+                      // 見出しが空のときは、読み上げで何の見出しかが分かるように
+                      ...(child.content.size === 0
+                        ? { 'aria-label': `${label || '条'}の見出し（未入力）` }
+                        : {}),
+                    },
               ),
             );
             return;
