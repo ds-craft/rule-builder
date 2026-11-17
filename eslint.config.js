@@ -12,6 +12,11 @@ export default tseslint.config(
   {
     files: ['**/*.{ts,tsx}'],
     rules: {
+      // 条文は全角空白を区切りに使うため、文字列・正規表現・コメントでは許可する
+      'no-irregular-whitespace': [
+        'error',
+        { skipStrings: true, skipComments: true, skipRegExps: true, skipTemplates: true },
+      ],
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
