@@ -1,5 +1,6 @@
 // 画面とサーバーで共有する処理。DOM・ブラウザ API に依存しないこと。
 export * from './model/types.ts';
+export * from './model/proposal.ts';
 export * from './numbering/numbers.ts';
 export * from './numbering/article.ts';
 export * from './numbering/wareki.ts';
@@ -9,3 +10,8 @@ export * from './markdown/frontMatter.ts';
 export * from './markdown/parse.ts';
 export * from './markdown/serialize.ts';
 export * from './model/ops.ts';
+export * from './ydoc/pmJson.ts';
+export * from './ydoc/yxml.ts';
+export * from './ydoc/proposal.ts';
+export * from './ydoc/draftFile.ts';
+export * from './compare/changes.ts';

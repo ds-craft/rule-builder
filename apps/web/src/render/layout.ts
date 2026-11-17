@@ -170,11 +170,19 @@ export function layoutRule(doc: RuleDoc): LawSection[] {
   return b.sections;
 }
 
-export type TocItem = { level: number; key: string; text: string; anchor: string };
+export type TocItem = {
+  level: number;
+  key: string;
+  text: string;
+  anchor: string;
+  /** 条なら文書の中で何番目の条か */
+  articleIndex?: number;
+};
 
 /** 目次（章・節・款・条と前文・附則）。 */
 export function tocItems(sections: LawSection[]): TocItem[] {
   const out: TocItem[] = [];
+  let articleIndex = 0;
   for (const s of sections) {
     if (s.heading)
       out.push({ level: 1, key: s.heading.key, text: s.heading.text, anchor: s.heading.anchor });
@@ -184,7 +192,14 @@ export function tocItems(sections: LawSection[]): TocItem[] {
       if (!h) continue;
       if (it.type === 'heading') depth = h.tag === 'h3' ? 2 : 3;
       const level = it.type === 'heading' ? depth : depth + 1;
-      out.push({ level: Math.max(1, level), key: h.key, text: h.text, anchor: h.anchor });
+      const item: TocItem = {
+        level: Math.max(1, level),
+        key: h.key,
+        text: h.text,
+        anchor: h.anchor,
+      };
+      if (it.type === 'article' && it.article) item.articleIndex = articleIndex++;
+      out.push(item);
     }
   }
   return out;

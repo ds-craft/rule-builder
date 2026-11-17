@@ -1,23 +1,24 @@
 // アプリ全体の状態。
-// 開いている文書（entries）と、画面の表示状態（ui）を持つ。
-// Phase 5 で改正案（1件＝1つの Y.Doc）にするまでは、公開中のルールをこのブラウザの中だけで編集する（保存しない）。
+// 開いている改正案（session）と、その中のルールの一覧の写し（entries）、画面の表示状態（ui）を持つ。
+// 改正案の実体は Y.Doc（state/session.ts）。entries は表示・書き出しのための写しで、Y.Doc の変更に合わせて作り直す。
 
-import type { Renumbering, RuleDoc, TopBlock } from '@rule-builder/core';
+import type { EntryOp, ProposalMeta, Renumbering, RuleDoc, TopBlock } from '@rule-builder/core';
 import type * as Y from 'yjs';
-import type { KeptUndoManager } from '../editor/ydoc.ts';
 import { create } from 'zustand';
+import type { KeptUndoManager } from '../editor/ydoc.ts';
+import type { ProposalSession, SaveState } from './session.ts';
 
+/** 改正案の中のルール（表示用の写し） */
 export type OpenEntry = {
+  /** entryId */
   key: string;
-  /** 公開中のルールを閲覧用に開いたもの */
-  source: 'remote';
+  op: EntryOp;
   ruleId: string;
-  path: string;
-  /** 取得したときの main のコミットSHA */
-  sha: string;
-  markdown: string;
+  baseSha: string;
+  baseMarkdown: string;
   /** 本文の最新の写し（エディタの変更を少し遅れて反映する。表示・書き出し用） */
   doc: RuleDoc;
+  /** 廃止のルールは本文を編集しない */
   readOnly: boolean;
   /** 本文の実体（エディタがそのまま編集する） */
   ydoc: Y.Doc;
@@ -47,17 +48,22 @@ export type UiState = {
 export type Toast = { id: number; message: string };
 
 export type AppState = {
+  session: ProposalSession | null;
+  proposal: ProposalMeta | null;
   entries: OpenEntry[];
   current: number;
+  saveState: SaveState;
   ui: UiState;
   toast: Toast | null;
-  /** 番号が変わった条の対応表（文書ごと・操作ごと）。参照の確認（Phase 7）で使う */
+  /** 番号が変わった条の対応表（ルールごと・操作ごと）。参照の確認（Phase 7）で使う */
   renumberLog: Record<string, Renumbering[][]>;
   logRenumbering: (key: string, list: Renumbering[]) => void;
-  /** 開いている文書を足し、その位置を返す（同じルールがあればそれを使う） */
-  openEntry: (entry: OpenEntry) => number;
-  closeAll: () => void;
-  /** エディタの変更をモデルの写しに反映する */
+  /** 改正案を開く（開いていた改正案は閉じる） */
+  openSession: (session: ProposalSession) => Promise<void>;
+  closeSession: () => Promise<void>;
+  /** Y.Doc の改正案の情報・ルールの一覧から写しを作り直す */
+  refresh: () => void;
+  /** エディタの変更を本文の写しに反映する */
   updateBody: (key: string, body: TopBlock[]) => void;
   setCurrent: (index: number) => void;
   setUi: (patch: Partial<UiState>) => void;
@@ -81,10 +87,14 @@ export const initialUi: UiState = {
 };
 
 let toastId = 0;
+let unsubscribe: (() => void) | null = null;
 
 export const useApp = create<AppState>()((set, get) => ({
+  session: null,
+  proposal: null,
   entries: [],
   current: -1,
+  saveState: 'saved',
   ui: initialUi,
   toast: null,
   renumberLog: {},
@@ -94,19 +104,45 @@ export const useApp = create<AppState>()((set, get) => ({
       renumberLog: { ...s.renumberLog, [key]: [...(s.renumberLog[key] ?? []), list] },
     }));
   },
-  openEntry(entry) {
-    const { entries } = get();
-    const i = entries.findIndex((e) => e.ruleId === entry.ruleId && e.sha === entry.sha);
-    if (i >= 0) return i;
-    set({ entries: [...entries, entry] });
-    return entries.length;
+  async openSession(session) {
+    const prev = get().session;
+    if (prev === session) return;
+    unsubscribe?.();
+    if (prev) await prev.destroy();
+    set({ session, entries: [], current: -1, renumberLog: {} });
+    unsubscribe = session.subscribe(() => get().refresh());
+    get().refresh();
+    void session.saveRecent();
   },
-  closeAll() {
-    get().entries.forEach((e) => {
-      e.undo.dispose();
-      e.ydoc.destroy();
+  async closeSession() {
+    const prev = get().session;
+    unsubscribe?.();
+    unsubscribe = null;
+    set({ session: null, proposal: null, entries: [], current: -1, renumberLog: {} });
+    if (prev) await prev.destroy();
+  },
+  refresh() {
+    const session = get().session;
+    if (!session) return;
+    const old = new Map(get().entries.map((e) => [e.key, e]));
+    const entries = session.entries().map((info): OpenEntry => {
+      const prev = old.get(info.entryId);
+      const body = prev?.doc.body ?? session.body(info);
+      return {
+        key: info.entryId,
+        op: info.op,
+        ruleId: info.ruleId,
+        baseSha: info.baseSha,
+        baseMarkdown: info.baseMarkdown,
+        doc: { meta: info.meta, body },
+        readOnly: info.op === 'repeal',
+        ydoc: session.ydoc,
+        fragment: session.fragment(info.entryId),
+        undo: session.undoFor(info.entryId),
+      };
     });
-    set({ entries: [], current: -1 });
+    const current = Math.min(get().current, entries.length - 1);
+    set({ proposal: session.meta(), entries, current, saveState: session.saveState });
   },
   updateBody(key, body) {
     set((s) => ({

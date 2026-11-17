@@ -17,13 +17,23 @@ import { useEffect } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
 import { useApp } from '../../state/store.ts';
 import { TitleBar } from '../shell/TitleBar.tsx';
+import { formatRuleNumber } from '@rule-builder/core';
 import { HomePage } from './HomePage.tsx';
+import { InfoPage } from './InfoPage.tsx';
+import { SavePage } from './SavePage.tsx';
 import { NewPage } from './NewPage.tsx';
 import { OpenPage } from './OpenPage.tsx';
 
 type PageKey = 'home' | 'new' | 'open' | 'info' | 'save' | 'export' | 'print' | 'close';
 
-type PageDef = { key: PageKey; icon: LucideIcon; label: string; needsProposal: boolean };
+type PageDef = {
+  key: PageKey;
+  icon: LucideIcon;
+  label: string;
+  needsProposal: boolean;
+  /** まだ中身のないページ（書き出し・新旧対照表は Phase 6） */
+  notReady?: boolean;
+};
 
 const PAGES: (PageDef | '-')[] = [
   { key: 'home', icon: House, label: 'ホーム', needsProposal: false },
@@ -32,8 +42,8 @@ const PAGES: (PageDef | '-')[] = [
   '-',
   { key: 'info', icon: Info, label: '情報', needsProposal: true },
   { key: 'save', icon: Save, label: '保存', needsProposal: true },
-  { key: 'export', icon: Upload, label: '書き出し', needsProposal: true },
-  { key: 'print', icon: Columns2, label: '新旧対照表・印刷', needsProposal: true },
+  { key: 'export', icon: Upload, label: '書き出し', needsProposal: true, notReady: true },
+  { key: 'print', icon: Columns2, label: '新旧対照表・印刷', needsProposal: true, notReady: true },
   '-',
   { key: 'close', icon: X, label: '閉じる', needsProposal: true },
 ];
@@ -45,9 +55,24 @@ export function FileScreen() {
   const navigate = useNavigate();
   const entries = useApp((s) => s.entries);
   const current = useApp((s) => s.current);
-  // 改正案（Phase 5）を開いていないときは、情報・保存などは押せない
-  const hasProposal = false;
-  const backTo = entries.length ? `/edit/${Math.max(0, current)}` : null;
+  const proposal = useApp((s) => s.proposal);
+  const saveState = useApp((s) => s.saveState);
+  // 改正案を開いていないときは、情報・保存などは押せない
+  const hasProposal = !!proposal;
+  const editable = entries.findIndex((e, i) => i >= Math.max(0, current) && e.op !== 'repeal');
+  const backTo = editable >= 0 ? `/edit/${editable}` : null;
+
+  // 閉じる：改正案を閉じてホームへ（内容は自動で保存されている）
+  useEffect(() => {
+    if (page !== 'close' || !proposal) return;
+    void useApp
+      .getState()
+      .closeSession()
+      .then(() => {
+        useApp.getState().showToast('改正案を閉じました（内容は自動で保存されています）');
+        void navigate('/file/home', { replace: true });
+      });
+  }, [page, proposal, navigate]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -60,13 +85,21 @@ export function FileScreen() {
   }, [backTo, navigate]);
 
   const def = PAGES.find((p): p is PageDef => p !== '-' && p.key === page);
-  if (!isPage(page) || !def || (def.needsProposal && !hasProposal)) {
+  if (!isPage(page) || !def || (def.needsProposal && !hasProposal) || def.notReady) {
     return <Navigate to="/file/home" replace />;
   }
+  if (page === 'close') return null;
 
   return (
     <>
-      <TitleBar center="ルールの改正案を作成・編集します" />
+      <TitleBar
+        center={
+          proposal
+            ? `${formatRuleNumber(proposal.amendingNumber) || '（番号なし）'} の改正案`
+            : 'ルールの改正案を作成・編集します'
+        }
+        save={proposal ? saveState : null}
+      />
       <div className="backstage">
         <nav aria-label="ファイル">
           {backTo && (
@@ -78,9 +111,14 @@ export function FileScreen() {
           {PAGES.map((p, i) => {
             if (p === '-') return <hr key={i} />;
             const Icon = p.icon;
-            if (p.needsProposal && !hasProposal) {
+            if ((p.needsProposal && !hasProposal) || p.notReady) {
               return (
-                <span key={p.key} className="disabled" aria-disabled="true">
+                <span
+                  key={p.key}
+                  className="disabled"
+                  aria-disabled="true"
+                  title={p.notReady && hasProposal ? '準備中です' : undefined}
+                >
                   <Icon className="i" aria-hidden="true" />
                   {p.label}
                 </span>
@@ -103,6 +141,8 @@ export function FileScreen() {
           {page === 'home' && <HomePage />}
           {page === 'new' && <NewPage />}
           {page === 'open' && <OpenPage />}
+          {page === 'info' && <InfoPage />}
+          {page === 'save' && <SavePage />}
         </div>
       </div>
     </>

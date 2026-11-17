@@ -2,6 +2,7 @@
 
 import { Extension, type Editor } from '@tiptap/core';
 import { Plugin, PluginKey, type EditorState } from '@tiptap/pm/state';
+import { changesPlugin } from './changes.ts';
 import type { UndoManager } from 'yjs';
 import {
   backspaceAtLineStart,
@@ -24,6 +25,8 @@ export type RuleEditingOptions = {
   getUndoManager: () => UndoManager | null;
   /** Ctrl+Enter（後に条を挿入） */
   onInsertArticle: () => void;
+  /** 改正前の条の中身（変更箇所の表示に使う。新規制定では null） */
+  baseSignatures: string[] | null;
 };
 
 /** 構造の変更は「元に戻す」の1回分として区切る */
@@ -48,7 +51,12 @@ export const RuleEditing = Extension.create<RuleEditingOptions>({
   name: 'ruleEditing',
 
   addOptions() {
-    return { notify: () => {}, getUndoManager: () => null, onInsertArticle: () => {} };
+    return {
+      notify: () => {},
+      getUndoManager: () => null,
+      onInsertArticle: () => {},
+      baseSignatures: null,
+    };
   },
 
   addProseMirrorPlugins() {
@@ -58,6 +66,7 @@ export const RuleEditing = Extension.create<RuleEditingOptions>({
     return [
       numberingPlugin(),
       currentLinePlugin(),
+      changesPlugin(this.options.baseSignatures),
       normalizePlugin(),
       undoBoundaryPlugin(getUndo),
       // 貼り付けは書式を落とす。複数行は行頭の番号から項・号・細分に分ける

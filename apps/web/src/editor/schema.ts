@@ -75,6 +75,8 @@ export const ArticleNode = Node.create({
       deleted: { default: false },
       /** 「削除」として残したときの元の内容（削除を取り消すときに使う。Markdown には出さない） */
       deletedContent: { default: null },
+      /** 改正前の何番目の条か（変更箇所の表示に使う。新しく足した条は null） */
+      baseKey: { default: null },
     };
   },
   parseHTML() {

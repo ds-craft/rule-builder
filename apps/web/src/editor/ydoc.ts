@@ -2,17 +2,16 @@
 // 最初から Collaboration 拡張で Y.XmlFragment につなぎ、元に戻すは Yjs の UndoManager（自分の操作だけを戻す）で行う。
 // Phase 5 で改正案1件＝1つの Y.Doc（ルールごとに body:<entryId> の断片）にし、Phase 9 でサーバーと同期する。
 
-import type { TopBlock } from '@rule-builder/core';
-import { getSchema } from '@tiptap/core';
 import {
-  defaultDeleteFilter,
-  defaultProtectedNodes,
-  prosemirrorJSONToYXmlFragment,
-  ySyncPluginKey,
-  yXmlFragmentToProsemirrorJSON,
-} from '@tiptap/y-tiptap';
+  bodyFromPM,
+  bodyToPM,
+  readFragmentJSON,
+  writeFragmentJSON,
+  type TopBlock,
+} from '@rule-builder/core';
+import { getSchema } from '@tiptap/core';
+import { defaultDeleteFilter, defaultProtectedNodes, ySyncPluginKey } from '@tiptap/y-tiptap';
 import * as Y from 'yjs';
-import { bodyFromPM, bodyToPM, type PMNode } from './convert.ts';
 import { schemaExtensions } from './schema.ts';
 
 export const editorSchema = getSchema(schemaExtensions);
@@ -20,16 +19,16 @@ export const editorSchema = getSchema(schemaExtensions);
 /** 同じ行で続けて打った分をまとめる時間（行が変わると plugins.ts の undoBoundaryPlugin で区切る） */
 export const UNDO_CAPTURE_MS = 1500;
 
-export const bodyField = (entryId: string) => `body:${entryId}`;
+export { bodyField } from '@rule-builder/core';
 
 /** 本文を Yjs の断片に書き込む（断片が空のときだけ使う） */
 export function writeBody(fragment: Y.XmlFragment, body: readonly TopBlock[]) {
-  prosemirrorJSONToYXmlFragment(editorSchema, bodyToPM(body), fragment);
+  writeFragmentJSON(fragment, bodyToPM(body));
 }
 
 /** Yjs の断片から本文（モデル）を読む */
 export function readBody(fragment: Y.XmlFragment): TopBlock[] {
-  return bodyFromPM(yXmlFragmentToProsemirrorJSON(fragment) as PMNode);
+  return bodyFromPM(readFragmentJSON(fragment));
 }
 
 /**

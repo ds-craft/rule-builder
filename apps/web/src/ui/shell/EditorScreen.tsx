@@ -1,9 +1,9 @@
 // エディタの画面：リボン・ナビゲーション・紙面・作業ウィンドウ・ステータスバー。
 
-import { ChevronDown, Eye } from 'lucide-react';
+import { Ban, Check, ChevronDown, Eye, FileText, Info, Plus, TriangleAlert } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
-import type { ArticleNum } from '@rule-builder/core';
+import { formatRuleNumber, type ArticleNum } from '@rule-builder/core';
 import { TextSelection } from '@tiptap/pm/state';
 import { getCommand, isEnabled } from '../../commands/registry.ts';
 import { articleCursor, cursorLocation } from '../../editor/commands.ts';
@@ -15,7 +15,11 @@ import { layoutRule } from '../../render/layout.ts';
 import { RuleView } from '../../render/RuleView.tsx';
 import { useApp, type PaneKind } from '../../state/store.ts';
 import { Menu, type MenuItem } from '../common/Menu.tsx';
-import { NotReadyPane, RuleInfoPane } from '../panes/RuleInfoPane.tsx';
+import { changesKey } from '../../editor/changes.ts';
+import { staleEntries } from '../../state/actions.ts';
+import { OP_TAG } from '../file/InfoPage.tsx';
+import { NotReadyPane } from '../panes/RuleInfoPane.tsx';
+import { RuleMetaForm } from '../panes/RuleMetaForm.tsx';
 import { NavigationPane } from './NavigationPane.tsx';
 import { Ribbon } from './Ribbon.tsx';
 import { StatusBar } from './StatusBar.tsx';
@@ -42,7 +46,7 @@ export function EditorScreen() {
     if (entry && current !== n) setCurrent(n);
   }, [entry, current, n, setCurrent]);
 
-  if (!entry) return <Navigate to="/file/home" replace />;
+  if (!entry) return <Navigate to={entries.length ? '/file/info' : '/file/home'} replace />;
   return <Editor key={entry.key} index={n} />;
 }
 
@@ -57,6 +61,14 @@ function Editor({ index }: { index: number }) {
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const cursor = ctx.editor ? articleCursor(ctx.editor.state) : null;
   const kind = cursor && cursor.index >= 0 ? cursor.infos[cursor.index]!.kind : null;
+  const proposal = ctx.app.proposal;
+  const saveState = ctx.app.saveState;
+  const [stale, setStale] = useState<string[]>([]);
+
+  // 改正案を開いたとき、元にした版が今の main より古ければ知らせる（並行改正の見落としに気づくため）
+  useEffect(() => {
+    staleEntries().then(setStale, () => setStale([]));
+  }, [proposal?.id]);
 
   // スマホでは開いたときにナビゲーションとリボンを畳む
   useEffect(() => {
@@ -70,11 +82,13 @@ function Editor({ index }: { index: number }) {
     const onKey = (e: KeyboardEvent) => {
       if (e.isComposing) return;
       const ctrl = e.ctrlKey || e.metaKey;
-      if (ctrl && e.key.toLowerCase() === 'f') {
+      const run = (id: string) => {
         e.preventDefault();
-        const c = getCommand('find');
+        const c = getCommand(id);
         if (isEnabled(c, ctx)) c.run(ctx);
-      }
+      };
+      if (ctrl && e.key.toLowerCase() === 'f') run('find');
+      if (ctrl && e.key.toLowerCase() === 's') run('save');
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -101,10 +115,15 @@ function Editor({ index }: { index: number }) {
     canvasRef.current?.querySelector(sel)?.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
-  const op = entry.readOnly ? '閲覧（公開中の版）' : '改正（この下書きはまだ保存されません）';
-  const title = `${entry.doc.meta.name || '（名称未設定）'} — ${op}`;
+  const amending = proposal ? formatRuleNumber(proposal.amendingNumber) || '（番号なし）' : '';
+  const opLabel = { create: '新規制定', amend: '改正', repeal: '廃止' }[entry.op];
+  const title = `${entry.doc.meta.name || '（名称未設定）'} — ${opLabel}（${amending}）`;
+  const go = (to: string) => {
+    setSwitcher(null);
+    void navigate(to);
+  };
   const switcherItems: MenuItem[] = [
-    { type: 'heading', text: '開いているルール' },
+    { type: 'heading', text: `${amending} の改正案に含まれるルール` },
     ...entries.map((e, i): MenuItem => ({
       type: 'custom',
       key: e.key,
@@ -113,17 +132,51 @@ function Editor({ index }: { index: number }) {
           type="button"
           role="menuitem"
           aria-current={i === index ? 'true' : undefined}
-          onClick={() => {
-            setSwitcher(null);
-            void navigate(`/edit/${i}`);
-          }}
+          onClick={() => go(`/edit/${i}`)}
         >
-          <span>{e.doc.meta.name}</span>
-          <span className="k">{e.readOnly ? '閲覧' : '改正'}</span>
+          {i === index ? (
+            <Check className="i" aria-hidden="true" />
+          ) : e.op === 'repeal' ? (
+            <Ban className="i" aria-hidden="true" />
+          ) : (
+            <FileText className="i" aria-hidden="true" />
+          )}
+          <span>{e.doc.meta.name || '（名称未設定）'}</span>
+          <span className="k">{OP_TAG[e.op].label}</span>
         </button>
       ),
     })),
+    { type: 'separator' },
+    {
+      type: 'custom',
+      key: 'add',
+      node: (
+        <button type="button" role="menuitem" onClick={() => go('/file/info')}>
+          <Plus className="i" aria-hidden="true" />
+          <span>ルールを追加…</span>
+        </button>
+      ),
+    },
+    {
+      type: 'custom',
+      key: 'info',
+      node: (
+        <button type="button" role="menuitem" onClick={() => go('/file/info')}>
+          <Info className="i" aria-hidden="true" />
+          <span>改正案の情報</span>
+        </button>
+      ),
+    },
   ];
+  const changes = editor ? changesKey.getState(editor.state) : null;
+  const summary =
+    entry.op === 'create'
+      ? '新規制定'
+      : entry.op === 'repeal'
+        ? '廃止'
+        : changes
+          ? `変更 ${changes.articles.filter((x) => x).length + changes.removed}条`
+          : '改正';
 
   const backdrop = ctx.isMobile && (ui.nav || !!ui.pane);
   const sheetStyle = { zoom: ui.zoom / 100 } as CSSProperties;
@@ -145,6 +198,7 @@ function Editor({ index }: { index: number }) {
             <ChevronDown className="i" aria-hidden="true" />
           </button>
         }
+        save={saveState}
       />
       {switcher && (
         <Menu
@@ -171,6 +225,9 @@ function Editor({ index }: { index: number }) {
           <NavigationPane
             sections={sections}
             activeKey={activeKey}
+            articleMarks={
+              entry.op === 'amend' && ui.showChanges ? (changes?.articles ?? null) : null
+            }
             onGoHeading={(key) => {
               setActiveKey(key);
               goTo(key);
@@ -179,18 +236,39 @@ function Editor({ index }: { index: number }) {
           />
         )}
         <div className="canvas" ref={canvasRef}>
-          {ui.mode === 'read' && (
+          {stale.includes(entry.key) && (
+            <div className="readbar warnbar" role="alert">
+              <TriangleAlert className="i" aria-hidden="true" />
+              <b>この下書きの作成後にルールが更新されています</b>
+              <span className="muted">
+                同じルールを変える改正案がほかにないか確かめてください。
+              </span>
+            </div>
+          )}
+          {entry.op === 'repeal' && (
+            <div className="readbar warnbar">
+              <Ban className="i" aria-hidden="true" />
+              <b>廃止</b>
+              <span className="muted">このルールは改正案で廃止します。本文は編集しません。</span>
+            </div>
+          )}
+          {ui.mode === 'read' && entry.op !== 'repeal' && (
             <div className="readbar">
               <Eye className="i" aria-hidden="true" />
               <b>閲覧モード</b>
               <span className="muted">
-                {entry.readOnly
-                  ? 'ポータルでの見た目です。公開中のルールを閲覧用に開いています。'
-                  : 'ポータルでの見た目です。編集するにはステータスバー右下の「編集」'}
+                ポータルでの見た目です。編集するにはステータスバー右下の「編集」
               </span>
             </div>
           )}
-          <div className={'sheet' + (editing ? ' editing' : '')} style={sheetStyle}>
+          <div
+            className={
+              'sheet' +
+              (editing ? ' editing' : '') +
+              (ui.showChanges && entry.op === 'amend' ? ' show-changes' : '')
+            }
+            style={sheetStyle}
+          >
             {!entry.readOnly && (
               <RuleEditorView
                 entry={entry}
@@ -210,19 +288,12 @@ function Editor({ index }: { index: number }) {
         </div>
         {ui.pane && (
           <TaskPane title={PANE_TITLES[ui.pane]} onClose={() => setUi({ pane: null })}>
-            {ui.pane === 'info' ? (
-              <RuleInfoPane
-                doc={entry.doc}
-                note={entry.readOnly ? '公開中のルールを閲覧用に開いています。' : undefined}
-              />
-            ) : (
-              <NotReadyPane />
-            )}
+            {ui.pane === 'info' ? <RuleMetaForm entry={entry} /> : <NotReadyPane />}
           </TaskPane>
         )}
         <StatusBar
           location={editing && editor ? cursorLocation(editor.state) : '—'}
-          summary={`元にした版 ${entry.sha.slice(0, 7)}`}
+          summary={summary}
         />
       </div>
       <div

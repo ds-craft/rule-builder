@@ -53,6 +53,7 @@ import {
   openInsertArticleDialog,
   openRenumberDialog,
 } from '../ui/common/structureDialogs.tsx';
+import { downloadDraft } from '../state/actions.ts';
 import { ZOOM_MAX, ZOOM_MIN } from '../state/store.ts';
 import { openMarkdownDialog } from '../ui/common/dialogs.tsx';
 import type { Command, CommandContext } from './types.ts';
@@ -306,7 +307,7 @@ const list: Command[] = [
     id: 'show-changes',
     label: '変更箇所を表示',
     icon: Highlighter,
-    enabled: never,
+    enabled: (ctx) => ctx.entry?.op === 'amend',
     pressed: (ctx) => ctx.app.ui.showChanges,
     run: (ctx) => ctx.app.setUi({ showChanges: !ctx.app.ui.showChanges }),
   },
@@ -324,7 +325,7 @@ const list: Command[] = [
     label: '編集',
     icon: Pencil,
     enabled: (ctx) => !!ctx.entry && !ctx.entry.readOnly,
-    pressed: (ctx) => ctx.app.ui.mode === 'edit',
+    pressed: (ctx) => ctx.app.ui.mode === 'edit' && !ctx.entry?.readOnly,
     run: (ctx) => ctx.app.setUi({ mode: 'edit' }),
   },
   {
@@ -384,8 +385,16 @@ const list: Command[] = [
       setTimeout(() => document.getElementById('navsearch')?.focus(), 0);
     },
   },
-  // 下書きファイルの保存（Phase 5）
-  { id: 'save', label: '保存', icon: Save, shortcut: 'Ctrl+S', enabled: never, run() {} },
+  {
+    id: 'save',
+    label: '下書きファイルを保存',
+    icon: Save,
+    shortcut: 'Ctrl+S',
+    enabled: (ctx) => !!ctx.app.session,
+    run: (ctx) => {
+      if (downloadDraft()) ctx.app.showToast('下書きファイルを保存しました');
+    },
+  },
   {
     id: 'zoom-in',
     label: '拡大',

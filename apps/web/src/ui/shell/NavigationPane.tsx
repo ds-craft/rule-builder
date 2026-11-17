@@ -10,11 +10,14 @@ export function NavigationPane({
   onGoHeading,
   onGoLine,
   activeKey,
+  articleMarks = null,
 }: {
   sections: LawSection[];
   onGoHeading: (key: string) => void;
   onGoLine: (key: string) => void;
   activeKey?: string | null;
+  /** 条ごとの変更（文書の条の順）。改正中のルールで変更箇所を表示するとき */
+  articleMarks?: ('new' | 'changed' | null)[] | null;
 }) {
   const search = useApp((s) => s.ui.search);
   const setUi = useApp((s) => s.setUi);
@@ -78,10 +81,23 @@ export function NavigationPane({
                   }}
                 >
                   {t.text}
+                  {t.articleIndex !== undefined && articleMarks?.[t.articleIndex] && (
+                    <span
+                      className={'chg' + (articleMarks[t.articleIndex] === 'new' ? ' new' : '')}
+                      title={
+                        articleMarks[t.articleIndex] === 'new' ? '新しく追加した条' : '変更した条'
+                      }
+                    />
+                  )}
                 </a>
               </li>
             ))}
           </ul>
+        )}
+        {!search.trim() && articleMarks && (
+          <p className="muted" style={{ marginTop: 12 }}>
+            ●は変更した条（緑は追加した条）
+          </p>
         )}
       </div>
     </nav>

@@ -124,3 +124,27 @@
 .rb-editor .article.cur-article {
   box-shadow: -14px 0 0 -11px var(--ctx);
 }
+.tag.repeal {
+  border-color: var(--err);
+  color: var(--err);
+}
+.readbar.warnbar {
+  background: var(--warn-50);
+}
+.sheet.editing.show-changes .rb-editor .article.changed::before,
+.sheet.editing.show-changes .rb-editor .article.new::before {
+  content: '';
+  position: absolute;
+  left: -28px;
+  top: 2px;
+  bottom: 2px;
+  width: 3px;
+  border-radius: 2px;
+  background: var(--blue);
+}
+.sheet.editing.show-changes .rb-editor .article.new::before {
+  background: var(--ok);
+}
+.rb-editor .article {
+  position: relative;
+}

@@ -2,7 +2,8 @@
 
 import Collaboration from '@tiptap/extension-collaboration';
 import { EditorContent, useEditor } from '@tiptap/react';
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
+import { articleSignature, listArticles, parseRule } from '@rule-builder/core';
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from 'react';
 import { getCommand } from '../commands/registry.ts';
 import { useCommandContext } from '../commands/useCommandContext.ts';
 import { LawTitle } from '../render/RuleView.tsx';
@@ -37,6 +38,14 @@ export function RuleEditorView({
     editorHandlers.insertArticle = () => getCommand('article-after').run(ctx);
   });
 
+  // 改正前の条の中身（変更箇所の表示に使う）
+  const baseSignatures = useMemo(
+    () =>
+      entry.op === 'amend'
+        ? listArticles(parseRule(entry.baseMarkdown).doc.body).map(articleSignature)
+        : null,
+    [entry.op, entry.baseMarkdown],
+  );
   const editor = useEditor(
     {
       extensions: [
@@ -49,6 +58,7 @@ export function RuleEditorView({
           notify: showToast,
           getUndoManager: () => entry.undo,
           onInsertArticle: () => editorHandlers.insertArticle(),
+          baseSignatures,
         }),
       ],
       editable: !entry.readOnly,
