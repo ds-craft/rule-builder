@@ -42,6 +42,8 @@
 /* ---- 紙面のエディタ（portal の見た目に合わせる。章・節は平たい見出しの行なので portal の .chapter > h2 の代わり） ---- */
 .rule-edit .rb-editor {
   outline: none;
+  /* portal の :focus-visible の枠（黄色）が紙面全体にかかるので消す */
+  box-shadow: none;
 }
 .rule-edit .law-title {
   cursor: pointer;

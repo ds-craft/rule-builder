@@ -1,9 +1,5 @@
-/* portal 由来（.rb-portal の内側だけに効く。vite.config.ts の portalScope） */
-@import './portal/tokens.css';
-@import './portal/base.css';
-@import './portal/components.css';
-@import './portal/style.css';
-/* アプリ固有 */
+/* アプリ固有のスタイル。portal 由来の CSS は main.tsx から1ファイルずつ読み込む
+   （@import でまとめると index.css の一部として処理され、vite.config.ts の portalScope が効かないため） */
 @import './app/tokens.css';
 @import './app/app.css';
 @import './app/shell.css';
