@@ -3,12 +3,10 @@
 // 自動反映の先として、メモリ上の GitHub（helpers/fakeGitHub.ts）を HTTP で立てる。発議・採決は模擬の OpsBot で行う。
 import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
-import { createServer, type Server } from 'node:http';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import type { TestProject } from 'vitest/node';
-import { FakeGitHub } from '../helpers/fakeGitHub.ts';
-import { remoteFiles } from '../helpers/fixtures.ts';
+import { startFakeGitHub, type FakeGitHubServer } from '../helpers/fakeGitHubServer.ts';
 
 export const PORT = 8790;
 export const GITHUB_PORT = 8791;
@@ -17,36 +15,7 @@ const ROOT = join(import.meta.dirname, '..', '..');
 
 let child: ChildProcess | null = null;
 let dir = '';
-let github: Server | null = null;
-
-/** メモリ上の GitHub を HTTP で出す。/__fake/main で main の先頭のコミットとファイルを返す（テストの確認用） */
-function startGitHub(): Promise<void> {
-  const gh = new FakeGitHub(RULES_REPO, remoteFiles(), ['令和8年ルール第1号']);
-  github = createServer((req, res) => {
-    const chunks: Buffer[] = [];
-    req.on('data', (c: Buffer) => chunks.push(c));
-    req.on('end', async () => {
-      const url = `http://127.0.0.1:${GITHUB_PORT}${req.url}`;
-      if (req.url === '/__fake/main') {
-        res.setHeader('content-type', 'application/json');
-        res.end(
-          JSON.stringify({ head: gh.head(), files: Object.fromEntries(gh.mainFiles()), pulls: gh.pulls }),
-        );
-        return;
-      }
-      const body = chunks.length ? Buffer.concat(chunks).toString('utf8') : undefined;
-      const r = await gh.fetch(url, {
-        method: req.method,
-        headers: req.headers as Record<string, string>,
-        body,
-      });
-      res.statusCode = r.status;
-      r.headers.forEach((v, k) => res.setHeader(k, v));
-      res.end(Buffer.from(await r.arrayBuffer()));
-    });
-  });
-  return new Promise((resolve) => github!.listen(GITHUB_PORT, '127.0.0.1', () => resolve()));
-}
+let github: FakeGitHubServer | null = null;
 
 function run(args: string[], log: (s: string) => void) {
   // Linux ではプロセスグループごと止められるよう、別のグループで起動する
@@ -59,7 +28,7 @@ function run(args: string[], log: (s: string) => void) {
 }
 
 export async function setup(project: TestProject) {
-  await startGitHub();
+  github = await startFakeGitHub(GITHUB_PORT, RULES_REPO);
   dir = mkdtempSync(join(tmpdir(), 'rb-itest-'));
   const envFile = join(dir, 'dev.env');
   writeFileSync(

@@ -4,7 +4,8 @@ import { spawn, type ChildProcess } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { API_PORT, APP_PORT } from './ports.ts';
+import { startFakeGitHub } from '../../server/test/helpers/fakeGitHubServer.ts';
+import { API_PORT, APP_PORT, GITHUB_PORT, RULES_REPO } from './ports.ts';
 
 const SERVER = join(import.meta.dirname, '..', '..', 'server');
 
@@ -34,6 +35,8 @@ function stop(child: ChildProcess) {
 }
 
 export default async function setup() {
+  // 自動反映の先（発議・採決は模擬の OpsBot で行う）
+  const github = await startFakeGitHub(GITHUB_PORT, RULES_REPO);
   const dir = mkdtempSync(join(tmpdir(), 'rb-e2e-'));
   const envFile = join(dir, 'dev.env');
   writeFileSync(
@@ -44,6 +47,13 @@ export default async function setup() {
       `APP_ORIGIN=http://localhost:${APP_PORT}`,
       `API_ORIGIN=http://localhost:${API_PORT}`,
       'ALLOW_DEV_LOGIN=true',
+      'OPSBOT_PROPOSALS=sim',
+      'SIM_DISCUSSION_HOURS=0',
+      `RULES_REPO=${RULES_REPO}`,
+      `GITHUB_API=http://127.0.0.1:${GITHUB_PORT}`,
+      'GITHUB_TOKEN=e2e-token',
+      'GITHUB_APP_ID=',
+      'GITHUB_APP_PRIVATE_KEY=',
     ].join('\n'),
   );
   const state = join(dir, 'state');
@@ -84,6 +94,7 @@ export default async function setup() {
     await new Promise((r) => setTimeout(r, 300));
   }
   return async () => {
+    github.close();
     stop(child);
     await new Promise((r) => setTimeout(r, 500));
     try {

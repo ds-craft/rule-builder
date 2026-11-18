@@ -73,7 +73,12 @@ function newProposal() {
     enforcementDate: '2026-07-28',
     summary: '運営の短縮投票に関する基本ルール改正',
   });
-  const entryId = addEntry(doc, { op: 'amend', ruleId: 'R0701001', baseSha: 'base', baseMarkdown: BEFORE });
+  const entryId = addEntry(doc, {
+    op: 'amend',
+    ruleId: 'R0701001',
+    baseSha: 'base',
+    baseMarkdown: BEFORE,
+  });
   // 改正前の本文を消してから、改正後の本文を書く（writeFragmentJSON は書き足す）
   const frag = entryFragment(doc, entryId);
   doc.transact(() => {
@@ -109,7 +114,11 @@ describe('発議から反映まで（模擬の OpsBot・メモリ上の GitHub�
 
     const submitted = await api(cookie, `/proposals/${id}/flow/submit`, { refsRemaining: 0 });
     expect(submitted.status, JSON.stringify(submitted.body)).toBe(200);
-    expect(submitted.body).toMatchObject({ status: 'unei_discussion', locked: false, simulated: true });
+    expect(submitted.body).toMatchObject({
+      status: 'unei_discussion',
+      locked: false,
+      simulated: true,
+    });
     await until(() => messages.some((m) => m.includes('"unei_discussion"')));
 
     // 公開リンクはログインなしで見られる
@@ -117,7 +126,10 @@ describe('発議から反映まで（模擬の OpsBot・メモリ上の GitHub�
     const pub = await fetch(`${API}/public/${publicId}`);
     expect(pub.status).toBe(200);
     expect(pub.headers.get('x-robots-tag')).toBe('noindex');
-    expect(await pub.json()).toMatchObject({ status: 'unei_discussion', title: '基本ルールの一部を改正するルール' });
+    expect(await pub.json()).toMatchObject({
+      status: 'unei_discussion',
+      title: '基本ルールの一部を改正するルール',
+    });
 
     const vote = await api(cookie, `/proposals/${id}/flow/mod-vote`, { method: 'secret' });
     expect(vote.status, JSON.stringify(vote.body)).toBe(200);
@@ -138,13 +150,15 @@ describe('発議から反映まで（模擬の OpsBot・メモリ上の GitHub�
 
     // Draft PR は開始直後のアラームで作る
     await until(async () => {
-      const g = (await (await fetch(`${GITHUB}/__fake/main`)).json()) as { pulls: { head: string }[] };
+      const g = (await (await fetch(`${GITHUB}/__fake/main`)).json()) as {
+        pulls: { head: string }[];
+      };
       return g.pulls.some((p) => p.head === `proposal/${id}`);
     });
 
-    expect((await api(cookie, `/proposals/${id}/flow/sim-vote`, { passed: true })).body.status).toBe(
-      'participant_discussion',
-    );
+    expect(
+      (await api(cookie, `/proposals/${id}/flow/sim-vote`, { passed: true })).body.status,
+    ).toBe('participant_discussion');
     const disc = await api(cookie, `/proposals/${id}/flow/participant-discussion`, {
       startedAt: new Date().toISOString(),
     });
@@ -163,7 +177,11 @@ describe('発議から反映まで（模擬の OpsBot・メモリ上の GitHub�
       files: Record<string, string>;
     };
     expect(g.head.message).toBe(MESSAGE);
-    expect(g.head.author).toEqual({ name: '令和8年ルール第2号', email: '', date: '2026-07-28T00:00:00+09:00' });
+    expect(g.head.author).toEqual({
+      name: '令和8年ルール第2号',
+      email: '',
+      date: '2026-07-28T00:00:00+09:00',
+    });
     expect(g.head.committer).toEqual(g.head.author);
     expect(g.files['rules/R0701001.md']).toBe(AFTER);
 

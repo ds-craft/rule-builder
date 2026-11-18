@@ -3,7 +3,7 @@
 // Cookie を届かせるため、画面とサーバーは同じホスト名（localhost）にそろえる。
 // `npm run test:e2e -w apps/web` で実行する（初回は `npx playwright install chromium`）。
 import { defineConfig } from '@playwright/test';
-import { API_PORT, APP_PORT } from './e2e/ports.ts';
+import { API_PORT, APP_PORT, RULES_REPO } from './e2e/ports.ts';
 
 export default defineConfig({
   testDir: 'e2e',
@@ -23,7 +23,8 @@ export default defineConfig({
     command: `npx vite --port ${APP_PORT} --strictPort`,
     url: `http://localhost:${APP_PORT}`,
     reuseExistingServer: false,
-    env: { VITE_API_ORIGIN: `http://localhost:${API_PORT}` },
+    // 画面が読む公開中のルールは、E2E ではメモリ上の GitHub（e2e/setup.ts）から返す（各テストで振り向ける）
+    env: { VITE_API_ORIGIN: `http://localhost:${API_PORT}`, VITE_RULES_REPO: RULES_REPO },
     timeout: 120_000,
   },
 });

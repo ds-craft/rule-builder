@@ -50,12 +50,23 @@ export function remaining(ms: number): string {
 const toLocalInput = (ms: number) => new Date(ms + 9 * 3_600_000).toISOString().slice(0, 16);
 const fromLocalInput = (v: string) => new Date(`${v}:00+09:00`).toISOString();
 
-function useNow(intervalMs = 30_000) {
+/** いまの時刻（intervalMs ごと、と at の時刻ちょうどに描き直す） */
+function useNow(intervalMs = 30_000, at: number | null = null) {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), intervalMs);
     return () => clearInterval(t);
   }, [intervalMs]);
+  useEffect(() => {
+    if (at === null || !Number.isFinite(at)) return;
+    const wait = at - Date.now();
+    if (wait <= 0) {
+      const t = setTimeout(() => setNow(Date.now()), 0);
+      return () => clearTimeout(t);
+    }
+    const t = setTimeout(() => setNow(Date.now()), Math.min(wait + 50, 2 ** 31 - 1));
+    return () => clearTimeout(t);
+  }, [at]);
   return now;
 }
 
@@ -325,7 +336,9 @@ export function ProposePage() {
   const entries = useApp((s) => s.entries);
   const showToast = useApp((s) => s.showToast);
   const { view, error, busy, serverChecks } = useFlow();
-  const now = useNow();
+  // 参加者投票を始められる時刻ちょうどにも描き直す（ボタンを押せるようにする）
+  const availableAt = view?.opsbot?.participantVoteAvailableAt;
+  const now = useNow(30_000, availableAt ? Date.parse(availableAt) : null);
 
   if (!view) {
     return (

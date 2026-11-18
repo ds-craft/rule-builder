@@ -10,7 +10,8 @@ export const read = (...p: string[]) => readFileSync(join(ROOT, ...p), 'utf8');
 export function remoteFiles(): Record<string, string> {
   const files: Record<string, string> = {};
   const dir = join(ROOT, 'rules', 'rules');
-  for (const f of readdirSync(dir)) if (f.endsWith('.md')) files[`rules/${f}`] = read('rules', 'rules', f);
+  for (const f of readdirSync(dir))
+    if (f.endsWith('.md')) files[`rules/${f}`] = read('rules', 'rules', f);
   const rep = join(dir, 'repealed');
   for (const f of readdirSync(rep)) {
     if (f.endsWith('.md')) files[`rules/repealed/${f}`] = read('rules', 'rules', 'repealed', f);
