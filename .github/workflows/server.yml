@@ -2,7 +2,8 @@
 # - main への push：本番（api.builder.ds2.uk）。D1 のマイグレーションを当ててから wrangler deploy する。
 # - 手動実行（Run workflow）：ステージング（api-staging.builder.ds2.uk と、画面の staging.builder.ds2.uk）。
 #   ブランチを選んで実行すれば、main に入れる前にステージングで試せる。
-# 秘密情報（DISCORD_CLIENT_SECRET・SESSION_SECRET）は wrangler secret put で Workers に登録済みのものを使い、ここでは扱わない。
+# 秘密情報（DISCORD_CLIENT_SECRET・SESSION_SECRET・GITHUB_APP_PRIVATE_KEY）は wrangler secret put で Workers に登録済みのものを使い、
+# ここでは扱わない。ステージングは発議・採決を模擬の OpsBot で行い、反映先は ds-craft/rules-staging（wrangler.jsonc）。
 name: Server
 
 on:
@@ -86,5 +87,7 @@ jobs:
       - run: npm run build -w apps/web
         env:
           VITE_API_ORIGIN: https://api-staging.builder.ds2.uk
+          # 改正の元にするルールも、ステージングの反映先（ds-craft/rules-staging）から読む
+          VITE_RULES_REPO: ds-craft/rules-staging
       - run: npx wrangler deploy -c wrangler.staging.jsonc
         working-directory: apps/web

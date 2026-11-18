@@ -1,5 +1,5 @@
 // rule-builder のサーバー（Cloudflare Workers）。
-// 秘密情報（DISCORD_CLIENT_SECRET・SESSION_SECRET）は `wrangler secret put` で登録し、ここには書かない。
+// 秘密情報（DISCORD_CLIENT_SECRET・SESSION_SECRET・GITHUB_APP_PRIVATE_KEY）は `wrangler secret put` で登録し、ここには書かない。
 // 手元では apps/server/.dev.vars に書く（.dev.vars.example を写す）。
 {
   "$schema": "../../node_modules/wrangler/config-schema.json",
@@ -18,6 +18,13 @@
     "APP_ORIGIN": "https://builder.ds2.uk",
     "API_ORIGIN": "https://api.builder.ds2.uk",
     "DISCORD_CLIENT_ID": "1480980120133963916",
+    // 自動反映の先（手順書 10-6）。ポータルの条文のページは PORTAL_ORIGIN/rule/<ID>.html
+    "RULES_REPO": "ds-craft/rules",
+    "PORTAL_ORIGIN": "https://www.ds2.uk",
+    // rule-builder 専用の GitHub App（docs/github-app.md）。秘密鍵はシークレット GITHUB_APP_PRIVATE_KEY
+    "GITHUB_APP_ID": "",
+    // 発議・採決の RPC の相手："opsbot"（本物）か "sim"（模擬。本番の Discord に投票を出さない）
+    "OPSBOT_PROPOSALS": "opsbot",
   },
 
   // 改正案の一覧・利用者・監査記録。database_id はリソース識別子で、秘密情報ではない
@@ -50,6 +57,13 @@
         "APP_ORIGIN": "https://staging.builder.ds2.uk",
         "API_ORIGIN": "https://api-staging.builder.ds2.uk",
         "DISCORD_CLIENT_ID": "1480980120133963916",
+        "RULES_REPO": "ds-craft/rules-staging",
+        "PORTAL_ORIGIN": "https://www.ds2.uk",
+        "GITHUB_APP_ID": "",
+        // ステージングは本番の OpsBot につながっているため、発議・採決は模擬の OpsBot で行う。
+        // 参加者協議の長さも短くして（6分）、通しの確認をすぐできるようにする
+        "OPSBOT_PROPOSALS": "sim",
+        "SIM_DISCUSSION_HOURS": "0.1",
       },
       "d1_databases": [
         {
@@ -62,7 +76,7 @@
       "durable_objects": {
         "bindings": [{ "name": "ProposalRoom", "class_name": "ProposalRoom" }],
       },
-      // OpsBot にはステージングがないため本番につなぐ（Phase 9 で呼ぶのは読み取りだけの getMemberStatus）
+      // OpsBot にはステージングがないため本番につなぐ（呼ぶのは読み取りだけの getMemberStatus。発議・採決は模擬）
       "services": [{ "binding": "OPSBOT", "service": "opsbot", "entrypoint": "RuleBuilderRpc" }],
     },
   },

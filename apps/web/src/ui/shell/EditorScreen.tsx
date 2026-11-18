@@ -1,6 +1,16 @@
 // エディタの画面：リボン・ナビゲーション・紙面・作業ウィンドウ・ステータスバー。
 
-import { Ban, Check, ChevronDown, Eye, FileText, Info, Plus, TriangleAlert } from 'lucide-react';
+import {
+  Ban,
+  Check,
+  ChevronDown,
+  Eye,
+  FileText,
+  Info,
+  Lock,
+  Plus,
+  TriangleAlert,
+} from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router';
 import { formatRuleNumber } from '@rule-builder/core';
@@ -25,6 +35,7 @@ import { Ribbon } from './Ribbon.tsx';
 import { StatusBar } from './StatusBar.tsx';
 import { TaskPane } from './TaskPane.tsx';
 import { TitleBar } from './TitleBar.tsx';
+import { FlowBanner } from './FlowBanner.tsx';
 
 const PANE_TITLES: Record<PaneKind, string> = {
   info: 'ルールの情報',
@@ -61,6 +72,7 @@ function Editor({ index }: { index: number }) {
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const proposal = ctx.app.proposal;
   const saveState = ctx.app.saveState;
+  const flowLocked = ctx.app.flowLocked;
   const [stale, setStale] = useState<{ sha: string; keys: string[] }>({ sha: '', keys: [] });
   /** 閉じた警告（同じ版のあいだは出さない） */
   const [dismissed, setDismissed] = useState<string | null>(null);
@@ -279,6 +291,14 @@ function Editor({ index }: { index: number }) {
               </button>
             </div>
           )}
+          <FlowBanner />
+          {flowLocked && entry.op !== 'repeal' && (
+            <div className="readbar">
+              <Lock className="i" aria-hidden="true" />
+              <b>読み取り専用</b>
+              <span className="muted">運営投票の開始後は内容が固定され、編集できません</span>
+            </div>
+          )}
           {entry.op === 'repeal' && (
             <div className="readbar warnbar">
               <Ban className="i" aria-hidden="true" />
@@ -286,7 +306,7 @@ function Editor({ index }: { index: number }) {
               <span className="muted">このルールは改正案で廃止します。本文は編集しません。</span>
             </div>
           )}
-          {ui.mode === 'read' && entry.op !== 'repeal' && (
+          {ui.mode === 'read' && entry.op !== 'repeal' && !flowLocked && (
             <div className="readbar">
               <Eye className="i" aria-hidden="true" />
               <b>閲覧モード</b>

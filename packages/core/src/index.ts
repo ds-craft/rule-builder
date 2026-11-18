@@ -16,6 +16,7 @@ export * from './ydoc/proposal.ts';
 export * from './ydoc/draftFile.ts';
 export * from './compare/index.ts';
 export * from './output/export.ts';
+export * from './flow/flow.ts';
 export * from './links/anchors.ts';
 export * from './lint/lint.ts';
 export * from './refs/refs.ts';

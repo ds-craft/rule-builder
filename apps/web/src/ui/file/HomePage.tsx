@@ -1,3 +1,4 @@
+import { STATUS_LABEL as CORE_STATUS_LABEL } from '@rule-builder/core';
 import { formatRuleNumber, isoToWareki, type AmendingNumber } from '@rule-builder/core';
 import { CloudOff, FileText, Info, TriangleAlert } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
@@ -40,7 +41,8 @@ export const proposalSummary = (p: Pick<RecentProposal, 'rules'>) =>
     .map((r) => (r.op === 'create' ? r.name || '（名称未設定）' : `${r.name}（${OP_LABEL[r.op]}）`))
     .join('、') || 'ルールなし';
 
-export const STATUS_LABEL: Record<string, string> = { draft: '下書き' };
+/** 改正案の状態の表示名（packages/core の STATUS_LABEL） */
+export const STATUS_LABEL: Record<string, string> = CORE_STATUS_LABEL;
 
 const numberLabel = (a: ServerProposal['amendingNumber'] | AmendingNumber) =>
   formatRuleNumber(a as AmendingNumber) || '（番号なし）';

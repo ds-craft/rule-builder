@@ -18,7 +18,7 @@ export type OpenEntry = {
   baseMarkdown: string;
   /** 本文の最新の写し（エディタの変更を少し遅れて反映する。表示・書き出し用） */
   doc: RuleDoc;
-  /** 廃止のルールは本文を編集しない */
+  /** 廃止のルールと、運営投票の開始後の改正案は本文を編集しない */
   readOnly: boolean;
   /** 本文の実体（エディタがそのまま編集する） */
   ydoc: Y.Doc;
@@ -55,6 +55,9 @@ export type AppState = {
   saveState: SaveState;
   /** 同じ改正案を開いているほかの運営者 */
   peers: Peer[];
+  /** 運営投票の開始後で、すべてのルールが読み取り専用（発議・採決の状態から。state/flow.ts） */
+  flowLocked: boolean;
+  setFlowLocked: (locked: boolean) => void;
   ui: UiState;
   toast: Toast | null;
   /** 番号が変わった条の対応表（ルールごと・操作ごと）。参照の確認（Phase 7）で使う */
@@ -100,6 +103,12 @@ export const useApp = create<AppState>()((set, get) => ({
   current: -1,
   saveState: 'saved',
   peers: [],
+  flowLocked: false,
+  setFlowLocked(locked) {
+    if (get().flowLocked === locked) return;
+    set({ flowLocked: locked });
+    get().refresh();
+  },
   ui: initialUi,
   toast: null,
   renumberLog: {},
@@ -114,7 +123,14 @@ export const useApp = create<AppState>()((set, get) => ({
     if (prev === session) return;
     unsubscribe?.();
     if (prev) await prev.destroy();
-    set({ session, entries: [], current: -1, renumberLog: {}, peers: session.peers() });
+    set({
+      session,
+      entries: [],
+      current: -1,
+      renumberLog: {},
+      peers: session.peers(),
+      flowLocked: false,
+    });
     const subs = [
       session.subscribe(() => get().refresh()),
       session.subscribeBodies(() => get().refreshBodies()),
@@ -128,7 +144,15 @@ export const useApp = create<AppState>()((set, get) => ({
     const prev = get().session;
     unsubscribe?.();
     unsubscribe = null;
-    set({ session: null, proposal: null, entries: [], current: -1, renumberLog: {}, peers: [] });
+    set({
+      session: null,
+      proposal: null,
+      entries: [],
+      current: -1,
+      renumberLog: {},
+      peers: [],
+      flowLocked: false,
+    });
     if (prev) await prev.destroy();
   },
   refresh() {
@@ -145,7 +169,7 @@ export const useApp = create<AppState>()((set, get) => ({
         baseSha: info.baseSha,
         baseMarkdown: info.baseMarkdown,
         doc: { meta: info.meta, body },
-        readOnly: info.op === 'repeal',
+        readOnly: info.op === 'repeal' || get().flowLocked,
         ydoc: session.ydoc,
         fragment: session.fragment(info.entryId),
         undo: session.undoFor(info.entryId),

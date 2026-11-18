@@ -6,8 +6,19 @@ import type { RuleDoc } from './types.ts';
 
 export type AmendingNumber = { kind: RuleKind; year: number; number: number };
 
-/** 改正案の状態（Phase 10 で発議・投票の状態を足す） */
-export type ProposalStatus = 'draft';
+/**
+ * 改正案の状態（手順書 10-1）。サーバーだけが変える（Yjs 文書の meta.status は使わず、下書きのまま）。
+ * 取り下げると下書きに戻る。
+ */
+export type ProposalStatus =
+  | 'draft'
+  | 'unei_discussion'
+  | 'mod_vote'
+  | 'participant_discussion'
+  | 'participant_vote'
+  | 'passed'
+  | 'enacted'
+  | 'rejected';
 
 export type ProposalMeta = {
   id: string;

@@ -144,6 +144,7 @@ export function pendingFiles(
   p: Proposal,
   c: CommitInfo,
   ex: ExportResult = exportProposal(p),
+  publicUrl: string | null = null,
 ): { path: string; content: string }[] {
   const base = `pending/${amendingId(p)}`;
   const info = {
@@ -152,7 +153,7 @@ export function pendingFiles(
     enforcementDate: p.enforcementDate,
     subject: c.subject,
     rules: ex.files.map((f) => ({ id: f.ruleId, op: f.op })),
-    publicUrl: null,
+    publicUrl,
   };
   return [
     { path: `${base}/pending.json`, content: JSON.stringify(info, null, 2) + '\n' },

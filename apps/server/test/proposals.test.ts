@@ -1,7 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { createD1 } from './helpers/sqlite.ts';
 
-const room = vi.hoisted(() => ({ fetch: vi.fn(), publicView: vi.fn() }));
+const room = vi.hoisted(() => ({
+  fetch: vi.fn(),
+  publicView: vi.fn(),
+  flowView: vi.fn(),
+  flowSubmit: vi.fn(),
+  flowStartModVote: vi.fn(),
+  flowSimDecide: vi.fn(),
+}));
 const getServerByName = vi.hoisted(() => vi.fn(async () => room));
 vi.mock('partyserver', () => ({ getServerByName }));
 
@@ -93,6 +100,9 @@ describe('運営の改正案の一覧（GET /proposals）', () => {
       createdBy: { id: UNEI, name: '運営の人' },
       updatedAt: '2026-11-02',
       updatedBy: { id: UNEI, name: '運営の人', avatarUrl: 'https://a/x.png' },
+      title: '',
+      voteClosesAt: null,
+      finalNumber: null,
     });
   });
 
@@ -183,5 +193,76 @@ describe('公開リンク（GET /public/:publicId）', () => {
     expect((await t.request(`/public/${ID}`)).status).toBe(404);
     expect((await t.request('/public/AAAAAAAAAAAAAAAAAAAAAA')).status).toBe(404);
     expect(room.publicView).not.toHaveBeenCalled();
+  });
+});
+
+describe('発議・採決の API（/proposals/:id/flow）', () => {
+  let t: ReturnType<typeof setup>;
+  const post = async (path: string, body: unknown, origin = APP) => ({
+    method: 'POST',
+    headers: { cookie: await sessionCookie(t.env), origin, 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  beforeEach(() => {
+    t = setup();
+    for (const f of [room.flowView, room.flowSubmit, room.flowStartModVote, room.flowSimDecide])
+      f.mockReset();
+    room.flowSubmit.mockResolvedValue({ ok: true, view: { status: 'unei_discussion' } });
+    room.flowStartModVote.mockResolvedValue({
+      ok: false,
+      error: 'conflict',
+      message: '運営内協議中の改正案だけ運営投票を開始できます',
+    });
+  });
+
+  it('ログインしていなければ 401', async () => {
+    expect((await t.request(`/proposals/${ID}/flow`)).status).toBe(401);
+  });
+
+  it('画面以外からの操作は断る（CSRF）', async () => {
+    const res = await t.request(
+      `/proposals/${ID}/flow/submit`,
+      await post('', {}, 'https://evil.example'),
+    );
+    expect(res.status).toBe(403);
+    expect(room.flowSubmit).not.toHaveBeenCalled();
+  });
+
+  it('発議：確かめた本人と参照の確認の件数を部屋に渡す', async () => {
+    const res = await t.request(
+      `/proposals/${ID}/flow/submit`,
+      await post('', { refsRemaining: 0 }),
+    );
+    expect(res.status).toBe(200);
+    expect(room.flowSubmit).toHaveBeenCalledWith({ uid: UNEI, name: '運営の人' }, 0);
+  });
+
+  it('運営投票：方式がなければ断り、部屋の断りは理由つきで返す', async () => {
+    expect((await t.request(`/proposals/${ID}/flow/mod-vote`, await post('', {}))).status).toBe(
+      400,
+    );
+    const res = await t.request(
+      `/proposals/${ID}/flow/mod-vote`,
+      await post('', { method: 'quick', quickConfirmed: true }),
+    );
+    expect(res.status).toBe(409);
+    expect(await res.json()).toMatchObject({ error: 'conflict' });
+    expect(room.flowStartModVote).toHaveBeenCalledWith(
+      { uid: UNEI, name: '運営の人' },
+      'quick',
+      true,
+    );
+  });
+
+  it('模擬の投票は模擬の OpsBot のときだけ', async () => {
+    expect(
+      (await t.request(`/proposals/${ID}/flow/sim-vote`, await post('', { passed: true }))).status,
+    ).toBe(404);
+    (t.env as Record<string, unknown>).OPSBOT_PROPOSALS = 'sim';
+    room.flowSimDecide.mockResolvedValue({ ok: true, view: { status: 'participant_discussion' } });
+    expect(
+      (await t.request(`/proposals/${ID}/flow/sim-vote`, await post('', { passed: true }))).status,
+    ).toBe(200);
+    expect(room.flowSimDecide).toHaveBeenCalledWith({ uid: UNEI, name: '運営の人' }, true);
   });
 });

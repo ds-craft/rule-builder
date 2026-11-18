@@ -11,12 +11,14 @@ import {
   Columns2,
   Eye,
   FilePlus2,
+  Flag,
   Hash,
   Highlighter,
   IndentDecrease,
   IndentIncrease,
   Link,
   List,
+  ListChecks,
   Minus,
   Pencil,
   Plus,
@@ -64,6 +66,7 @@ import {
   linkRangeAt,
 } from '../ui/common/linkDialog.tsx';
 import { checkCounts } from '../editor/checks.ts';
+import { useFlow } from '../state/flow.ts';
 import type { Command, CommandContext } from './types.ts';
 
 /** 構造の変更（1回の「元に戻す」で戻る） */
@@ -344,6 +347,27 @@ const list: Command[] = [
     icon: Columns2,
     enabled: (ctx) => !!ctx.app.session,
     run: (ctx) => ctx.navigate('/file/print'),
+  },
+
+  // ---- 校閲：発議（10-8.4）。状態は state/flow.ts（サーバーの手続の写し） ----
+  {
+    id: 'propose',
+    label: '発議',
+    icon: Flag,
+    tip: '発議前の確認をして発議する',
+    enabled: (ctx) => !!ctx.app.session && useFlow.getState().view?.status === 'draft',
+    run: (ctx) => ctx.navigate('/file/propose'),
+  },
+  {
+    id: 'flow-status',
+    label: '発議の状況',
+    icon: ListChecks,
+    tip: '進み具合・投票の締切と結果を見る',
+    enabled: (ctx) => {
+      const s = useFlow.getState().view?.status;
+      return !!ctx.app.session && !!s && s !== 'draft';
+    },
+    run: (ctx) => ctx.navigate('/file/propose'),
   },
 
   // ---- 表示 ----

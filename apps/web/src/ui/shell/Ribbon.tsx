@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router';
 import { commandLabel, commandTip, getCommand, isEnabled } from '../../commands/registry.ts';
 import type { CommandContext } from '../../commands/types.ts';
 import { useCommandContext } from '../../commands/useCommandContext.ts';
+import { useFlow } from '../../state/flow.ts';
 import type { RibbonTab } from '../../state/store.ts';
 import { Icon } from '../common/Icon.tsx';
 import { moveFocus } from '../common/keyNav.ts';
@@ -54,6 +55,7 @@ const LAYOUT: Record<RibbonTab, Group[]> = {
     { label: 'チェック', kind: 'buttons', buttons: [lg('pane-check')] },
     { label: '参照', kind: 'buttons', buttons: [lg('pane-refs')] },
     { label: '変更', kind: 'buttons', buttons: [lg('show-changes'), lg('compare')] },
+    { label: '発議', kind: 'buttons', buttons: [lg('propose'), lg('flow-status')] },
   ],
   view: [
     { label: '表示モード', kind: 'buttons', buttons: [lg('mode-edit'), lg('mode-read')] },
@@ -141,6 +143,8 @@ const KIND_KEY: Record<string, string> = { kou: 'p', gou: 'i', saibun: 's' };
 
 export function Ribbon() {
   const ctx = useCommandContext();
+  // 発議・採決の状態が変わったら、校閲タブの「発議」の押せる・押せないを描き直す
+  useFlow((s) => s.view?.status);
   const cursor = ctx.editor ? articleCursor(ctx.editor.state) : null;
   /** カーソルが条の中にあるときの条番号（条のツールのタブを出す） */
   const articleLabel = cursor?.article.attrs.num

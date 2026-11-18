@@ -4,7 +4,9 @@
 
 import { parseRule, type RuleMeta } from '@rule-builder/core';
 
-export const RULES_REPO = 'ds-craft/rules';
+/** 読み込むリポジトリ（ステージングのビルドでは VITE_RULES_REPO=ds-craft/rules-staging） */
+export const RULES_REPO: string =
+  (import.meta.env.VITE_RULES_REPO as string | undefined) || 'ds-craft/rules';
 const API = `https://api.github.com/repos/${RULES_REPO}`;
 const RAW = `https://raw.githubusercontent.com/${RULES_REPO}`;
 

@@ -6,6 +6,7 @@ import {
   ArrowLeft,
   Columns2,
   FileText,
+  Flag,
   FolderOpen,
   House,
   Info,
@@ -27,13 +28,24 @@ import { HomePage } from './HomePage.tsx';
 import { ExportPage } from './ExportPage.tsx';
 import { InfoPage } from './InfoPage.tsx';
 import { PrintPage } from './PrintPage.tsx';
+import { ProposePage } from './ProposePage.tsx';
 import { SavePage } from './SavePage.tsx';
 import { NewPage } from './NewPage.tsx';
 import { OpenPage } from './OpenPage.tsx';
 import { HelpPage } from './HelpPage.tsx';
 
 type PageKey =
-  'home' | 'new' | 'open' | 'info' | 'save' | 'export' | 'print' | 'help' | 'account' | 'close';
+  | 'home'
+  | 'new'
+  | 'open'
+  | 'info'
+  | 'propose'
+  | 'save'
+  | 'export'
+  | 'print'
+  | 'help'
+  | 'account'
+  | 'close';
 
 type PageDef = {
   key: PageKey;
@@ -52,6 +64,7 @@ const PAGES: (PageDef | '-')[] = [
   { key: 'open', icon: FolderOpen, label: '開く', needsProposal: false },
   '-',
   { key: 'info', icon: Info, label: '情報', needsProposal: true },
+  { key: 'propose', icon: Flag, label: '発議', needsProposal: true },
   { key: 'save', icon: Save, label: '保存', needsProposal: true },
   { key: 'export', icon: Upload, label: '書き出し', needsProposal: true },
   { key: 'print', icon: Columns2, label: '新旧対照表・印刷', needsProposal: true },
@@ -161,6 +174,7 @@ export function FileScreen() {
           {page === 'new' && <NewPage />}
           {page === 'open' && <OpenPage />}
           {page === 'info' && <InfoPage />}
+          {page === 'propose' && <ProposePage />}
           {page === 'save' && <SavePage />}
           {page === 'export' && <ExportPage />}
           {page === 'print' && <PrintPage />}

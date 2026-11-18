@@ -8,3 +8,11 @@ APP_ORIGIN=http://localhost:5173
 API_ORIGIN=http://localhost:8787
 # Discord を通さずにログインできる開発用の入口（/auth/dev-login）。API_ORIGIN が localhost のときだけ有効
 ALLOW_DEV_LOGIN=true
+# 発議・採決は模擬の OpsBot で行う（投票の可決・否決は発議ページのボタンで決める）。参加者協議の長さ（時間）
+OPSBOT_PROPOSALS=sim
+SIM_DISCUSSION_HOURS=0.01
+# 自動反映の先。手元では書き込みのできない（GitHub App のない）状態で読み取りだけ行う
+RULES_REPO=ds-craft/rules-staging
+# GitHub App の秘密鍵（.pem の中身。改行は 
+ にする）。手元では空でよい（書き込みは失敗として扱われる）
+GITHUB_APP_PRIVATE_KEY=

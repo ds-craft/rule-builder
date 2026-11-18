@@ -1,0 +1,181 @@
+/* 発議・採決（手順書 10-8）：発議ページ・状態の帯・公開リンクの閲覧画面 */
+
+.flow-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+  counter-reset: st;
+  max-width: 900px;
+}
+.flow-steps li {
+  flex: 1 1 110px;
+  padding: 6px 8px 6px 28px;
+  position: relative;
+  font-size: 13px;
+  border-top: 4px solid var(--g420);
+  color: var(--g600);
+}
+.flow-steps li::before {
+  counter-increment: st;
+  content: counter(st);
+  position: absolute;
+  left: 4px;
+  top: 6px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--g420);
+  color: #fff;
+  font-size: 11px;
+  text-align: center;
+  line-height: 18px;
+}
+.flow-steps li.done {
+  border-color: var(--ok);
+}
+.flow-steps li.done::before {
+  background: var(--ok);
+  content: '✓';
+}
+.flow-steps li.now {
+  border-color: var(--blue);
+  color: var(--g900);
+  font-weight: bold;
+}
+.flow-steps li.now::before {
+  background: var(--blue);
+}
+.flow-steps li.stop {
+  border-color: var(--err);
+  color: var(--g900);
+}
+.flow-steps li.stop::before {
+  background: var(--err);
+  content: '×';
+}
+.flow-state {
+  margin: 0 0 16px;
+}
+.flow-grid {
+  display: grid;
+  gap: 16px;
+  max-width: 900px;
+}
+.flow-grid > * {
+  min-width: 0;
+}
+.flow-grid .bs-h {
+  margin-top: 0;
+}
+.public-link a,
+.flow-grid code {
+  overflow-wrap: anywhere;
+}
+.checks {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 12px;
+}
+.checks li {
+  display: flex;
+  gap: 8px;
+  padding: 4px 0;
+  align-items: baseline;
+}
+.checks .mk {
+  font-weight: bold;
+  width: 1.2em;
+  flex: none;
+}
+.checks .ok .mk {
+  color: var(--ok);
+}
+.checks .ng .mk {
+  color: var(--err);
+}
+.paste {
+  display: block;
+  width: 100%;
+  height: 120px;
+  font-size: 13px;
+  margin-top: 4px;
+  box-sizing: border-box;
+}
+.kv {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 16px;
+  margin: 0 0 12px;
+}
+.kv dt {
+  color: var(--g600);
+}
+.kv dd {
+  margin: 0;
+  min-width: 0;
+}
+fieldset.plain {
+  border: 0;
+  padding: 0;
+  margin: 0 0 8px;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+/* 状態の帯（運営内協議中・運営投票中など） */
+.ebanner-wrap.flow {
+  background: var(--blue-50);
+  border-bottom-color: var(--blue-100);
+}
+/* 公開リンクの閲覧画面 */
+.pub-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 6px 12px 0;
+  background: var(--g50);
+  border-bottom: 1px solid var(--g420);
+}
+.pub-tabs button {
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 6px 6px 0 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+.pub-tabs button[aria-selected='true'] {
+  background: #fff;
+  border-color: var(--g420);
+  border-bottom-color: #fff;
+  margin-bottom: -1px;
+  font-weight: bold;
+}
+.pub-body {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 16px;
+}
+.pub-body .ebanner-wrap {
+  position: static;
+  margin: 0 0 16px;
+  border-radius: 6px;
+}
+.pub-body .sheet {
+  margin: 0 auto 24px;
+}
+@media (max-width: 767px) {
+  .kv {
+    grid-template-columns: 1fr;
+  }
+  .kv dd {
+    margin-bottom: 6px;
+  }
+}

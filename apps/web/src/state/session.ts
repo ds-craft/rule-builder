@@ -56,6 +56,7 @@ export class ProposalSession {
   private bodyListeners = new Set<() => void>();
   private closeListeners = new Set<(code: number) => void>();
   private peerListeners = new Set<() => void>();
+  private flowListeners = new Set<() => void>();
   private peerCache: Peer[] = [];
   saveState: SaveState = 'saved';
 
@@ -102,6 +103,8 @@ export class ProposalSession {
     provider.on('status', this.onStatus);
     provider.on('connection-close', this.onClose);
     provider.awareness.on('change', this.onAwareness);
+    // 発議・採決の状態が変わったとき、サーバーが独自メッセージで知らせる（apps/server の ProposalRoom）
+    provider.on('custom-message', this.onCustomMessage);
     // 同期できたら（自分の内容を送り終えるまで少し待ってから）、サーバーにある改正案として覚える
     provider.on('synced', (synced: boolean) => {
       if (!synced) return;
@@ -157,6 +160,21 @@ export class ProposalSession {
     const code = event?.code ?? 0;
     this.closeListeners.forEach((f) => f(code));
   };
+
+  private onCustomMessage = (message: string) => {
+    try {
+      const m = JSON.parse(message) as { type?: string };
+      if (m.type === 'flow') this.flowListeners.forEach((f) => f());
+    } catch {
+      // 知らないメッセージは捨てる
+    }
+  };
+
+  /** 発議・採決の状態が変わったとき（サーバーからの知らせ）に呼ぶ */
+  onFlowChange(f: () => void): () => void {
+    this.flowListeners.add(f);
+    return () => this.flowListeners.delete(f);
+  }
 
   private onAwareness = () => {
     // カーソルが動くたびではなく、顔ぶれか開いているルールが変わったときだけ知らせる
@@ -305,8 +323,10 @@ export class ProposalSession {
     this.bodyListeners.clear();
     this.closeListeners.clear();
     this.peerListeners.clear();
+    this.flowListeners.clear();
     if (this.provider) {
       this.provider.awareness.off('change', this.onAwareness);
+      this.provider.off('custom-message', this.onCustomMessage);
       this.provider.destroy();
       this.provider = null;
     }
