@@ -10,6 +10,7 @@ import {
   isWithdrawable,
   isoToWareki,
   lintRule,
+  serializeRule,
   type ProposalStatus,
 } from '@rule-builder/core';
 import { Copy, ExternalLink, Flag, TriangleAlert } from 'lucide-react';
@@ -77,7 +78,11 @@ function changeSummary(entries: OpenEntry[]): string[] {
     if (e.op === 'create') return `${name}：新しく制定`;
     if (e.op === 'repeal') return `${name}：廃止`;
     const n = changedCount(e);
-    return n ? `${name}：${n}条を改正` : `${name}：変更なし`;
+    if (n) return `${name}：${n}条を改正`;
+    // 条は同じで、前文・題名などだけを変えた改正
+    return serializeRule(e.doc) !== e.baseMarkdown
+      ? `${name}：前文などを改正`
+      : `${name}：変更なし`;
   });
 }
 
@@ -153,7 +158,8 @@ function useClientChecks(): { checks: Check[]; loading: boolean } {
     0,
   );
   const refs = checkCounts().refs + incoming;
-  const changed = entries.some((e) => e.op !== 'amend' || changedCount(e));
+  // サーバー（checks.ts の書き出し）と同じく、原文と1文字でも違えば数える（前文だけの改正も含む）
+  const changed = entries.some((e) => e.op !== 'amend' || serializeRule(e.doc) !== e.baseMarkdown);
   const checks: Check[] = [
     {
       key: 'entries',
