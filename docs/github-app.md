@@ -62,6 +62,6 @@ App を作ったあと、ds-craft/rules の main にルールセットを設定�
 ## 仕組み
 
 - サーバー（`apps/server/src/github/app.ts`）が WebCrypto で JWT（RS256）を署名し、`GET /repos/{repo}/installation` でインストール ID を調べてインストールトークンを得る。GitHub が配る PKCS#1 の鍵は、読み込むときに PKCS#8 に包み直す。
-- 反映は Git Data API（tree → commit → ref の早送り）で行い、GitHub のマージボタンは使わない。作者・コミッターは改正ルール番号、日時は施行日 00:00 +09:00。GitHub がメールの空を受け付けなければ `noreply@ds2.uk` にする（`rule_history.py` は作者名だけを見る）。
+- 反映は Git Data API（tree → commit → ref の早送り）で行い、GitHub のマージボタンは使わない。作者・コミッターは改正ルール番号、日時は施行日 00:00 +09:00。メールは、まず空で作り、GitHub が受け付けなければ（422）`noreply@ds2.uk` にする（`rule_history.py` は作者名だけを見る）。Git Data API はメールの空を受け付けないため、実際には `noreply@ds2.uk` になる（2026-11-18 に rules-staging で確認。手作業で push した過去のコミットはメールが空のまま）。
 - 施行前の掲載（`pending/<改正ルールID>/`）と、その削除のコミットは、作者・コミッターを指定しない（GitHub App になる）。
 - 手元の開発と結合テストでは、App の代わりに `GITHUB_TOKEN`（と `GITHUB_API`）でメモリ上の GitHub につなぐ。
