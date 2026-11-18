@@ -6,7 +6,16 @@ import globals from 'globals';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['**/dist/**', '**/node_modules/**', 'coverage/**', 'prototype/**'] },
+  {
+    ignores: [
+      '**/dist/**',
+      '**/node_modules/**',
+      'coverage/**',
+      'prototype/**',
+      '**/.wrangler/**',
+      'apps/server/src/worker-configuration.d.ts',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -36,6 +45,14 @@ export default tseslint.config(
       // HMR のための警告。共有の関数をコンポーネントと同じファイルに置くことがあるため切る
       'react-refresh/only-export-components': 'off',
     },
+  },
+  {
+    files: ['apps/server/**/*.ts'],
+    languageOptions: { globals: { ...globals.es2023, ...globals.serviceworker } },
+  },
+  {
+    files: ['apps/server/test/**/*.ts', 'apps/server/vitest.*.ts'],
+    languageOptions: { globals: { ...globals.node } },
   },
   {
     files: ['*.{js,ts}', '**/vite.config.ts', '**/vitest.config.ts', 'scripts/**'],

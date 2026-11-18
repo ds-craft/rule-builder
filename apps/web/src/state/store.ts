@@ -6,7 +6,7 @@ import type { EntryOp, ProposalMeta, Renumbering, RuleDoc, TopBlock } from '@rul
 import type * as Y from 'yjs';
 import { create } from 'zustand';
 import type { KeptUndoManager } from '../editor/ydoc.ts';
-import type { ProposalSession, SaveState } from './session.ts';
+import type { Peer, ProposalSession, SaveState } from './session.ts';
 
 /** 改正案の中のルール（表示用の写し） */
 export type OpenEntry = {
@@ -29,7 +29,7 @@ export type OpenEntry = {
 export type RibbonTab = 'home' | 'insert' | 'review' | 'view' | 'article';
 export type PaneKind = 'info' | 'check' | 'refs';
 export type ViewMode = 'edit' | 'read';
-export type OpenLocation = 'recent' | 'remote' | 'device';
+export type OpenLocation = 'server' | 'remote' | 'device';
 
 export type UiState = {
   tab: RibbonTab;
@@ -53,6 +53,8 @@ export type AppState = {
   entries: OpenEntry[];
   current: number;
   saveState: SaveState;
+  /** 同じ改正案を開いているほかの運営者 */
+  peers: Peer[];
   ui: UiState;
   toast: Toast | null;
   /** 番号が変わった条の対応表（ルールごと・操作ごと）。参照の確認（Phase 7）で使う */
@@ -63,6 +65,8 @@ export type AppState = {
   closeSession: () => Promise<void>;
   /** Y.Doc の改正案の情報・ルールの一覧から写しを作り直す */
   refresh: () => void;
+  /** ほかの人の編集を本文の写しに反映する */
+  refreshBodies: () => void;
   /** エディタの変更を本文の写しに反映する */
   updateBody: (key: string, body: TopBlock[]) => void;
   setCurrent: (index: number) => void;
@@ -83,7 +87,7 @@ export const initialUi: UiState = {
   showChanges: true,
   zoom: 100,
   search: '',
-  openLocation: 'recent',
+  openLocation: 'server',
 };
 
 let toastId = 0;
@@ -95,6 +99,7 @@ export const useApp = create<AppState>()((set, get) => ({
   entries: [],
   current: -1,
   saveState: 'saved',
+  peers: [],
   ui: initialUi,
   toast: null,
   renumberLog: {},
@@ -109,8 +114,13 @@ export const useApp = create<AppState>()((set, get) => ({
     if (prev === session) return;
     unsubscribe?.();
     if (prev) await prev.destroy();
-    set({ session, entries: [], current: -1, renumberLog: {} });
-    unsubscribe = session.subscribe(() => get().refresh());
+    set({ session, entries: [], current: -1, renumberLog: {}, peers: session.peers() });
+    const subs = [
+      session.subscribe(() => get().refresh()),
+      session.subscribeBodies(() => get().refreshBodies()),
+      session.subscribePeers(() => set({ peers: session.peers() })),
+    ];
+    unsubscribe = () => subs.forEach((f) => f());
     get().refresh();
     void session.saveRecent();
   },
@@ -118,7 +128,7 @@ export const useApp = create<AppState>()((set, get) => ({
     const prev = get().session;
     unsubscribe?.();
     unsubscribe = null;
-    set({ session: null, proposal: null, entries: [], current: -1, renumberLog: {} });
+    set({ session: null, proposal: null, entries: [], current: -1, renumberLog: {}, peers: [] });
     if (prev) await prev.destroy();
   },
   refresh() {
@@ -143,6 +153,18 @@ export const useApp = create<AppState>()((set, get) => ({
     });
     const current = Math.min(get().current, entries.length - 1);
     set({ proposal: session.meta(), entries, current, saveState: session.saveState });
+  },
+  refreshBodies() {
+    const session = get().session;
+    if (!session) return;
+    const infos = new Map(session.entries().map((i) => [i.entryId, i]));
+    set((s) => ({
+      entries: s.entries.map((e) => {
+        const info = infos.get(e.key);
+        if (!info) return e;
+        return { ...e, doc: { ...e.doc, body: session.body(info) } };
+      }),
+    }));
   },
   updateBody(key, body) {
     set((s) => ({

@@ -1,0 +1,12 @@
+// ステージングの画面（staging.builder.ds2.uk）。本番の画面は GitHub Pages（builder.ds2.uk）に置き、これは使わない。
+// サーバーのステージング（api-staging.builder.ds2.uk）と同じサイトに置き、ログインの Cookie が届くようにする。
+// .github/workflows/server.yml の staging から、VITE_API_ORIGIN を付けてビルドした dist を置く。
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "rule-builder-web-staging",
+  "compatibility_date": "2026-11-01",
+  "assets": { "directory": "./dist" },
+  "routes": [{ "pattern": "staging.builder.ds2.uk", "custom_domain": true }],
+  "workers_dev": false,
+  "preview_urls": false,
+}

@@ -1,0 +1,14 @@
+// 手元の開発・E2E 専用の OpsBot の代わり（`npm run dev -w apps/server` で一緒に起動する）。デプロイしない。
+// 本物の OpsBot と同じ名前・エントリポイントにし、rule-builder の Service Binding がそのままつながるようにする。
+{
+  "$schema": "../../../../node_modules/wrangler/config-schema.json",
+  "name": "opsbot",
+  "main": "index.ts",
+  "compatibility_date": "2026-11-01",
+  "vars": {
+    // 運営者として扱う Discord ユーザー ID（カンマ区切り）。"*" なら全員を運営者として扱う
+    "DEV_UNEI_IDS": "*",
+    // "*" でも運営者として扱わない ID（ログインを断る場面の確認用。E2E で使う）
+    "DEV_NOT_UNEI_IDS": "100000000000000099",
+  },
+}

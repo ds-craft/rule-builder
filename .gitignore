@@ -12,3 +12,7 @@ coverage/
 # 手順書とプロトタイプはリポジトリに含めない
 docs/implementation-plan.md
 prototype/
+
+# Playwright の結果
+test-results/
+playwright-report/

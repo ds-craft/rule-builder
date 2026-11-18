@@ -70,3 +70,28 @@ export async function deleteRecent(id: string): Promise<void> {
 export function resetRecentMemory() {
   memory = new Map();
 }
+
+// ---------- サーバーと同期できた改正案 ----------
+// サーバーの一覧（D1）は少し遅れて更新されるため、同期できた改正案をこの端末で覚えておき、
+// 「このブラウザだけにある改正案」に数えないようにする。
+
+const ON_SERVER_KEY = 'rule-builder:on-server';
+
+export function onServerIds(): Set<string> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(ON_SERVER_KEY) ?? '[]') as string[]);
+  } catch {
+    return new Set();
+  }
+}
+
+export function markOnServer(id: string) {
+  const ids = onServerIds();
+  if (ids.has(id)) return;
+  ids.add(id);
+  try {
+    localStorage.setItem(ON_SERVER_KEY, JSON.stringify([...ids]));
+  } catch {
+    // 覚えられなくても、サーバーの一覧が更新されれば数えなくなる
+  }
+}

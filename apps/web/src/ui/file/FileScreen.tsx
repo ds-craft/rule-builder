@@ -1,5 +1,6 @@
 // ファイル画面（Word の Backstage）：左の縦メニューと各ページ。
 // 起動時の画面も、編集中に「ファイル」タブで開く画面も、すべてこの1つの画面にまとめる。
+// ログインしていなければ、ホーム（Discord でログイン）とヘルプだけを使える。
 
 import {
   ArrowLeft,
@@ -11,12 +12,15 @@ import {
   LifeBuoy,
   Save,
   Upload,
+  User,
   X,
   type LucideIcon,
 } from 'lucide-react';
 import { useEffect } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router';
+import { useAuth } from '../../state/auth.ts';
 import { useApp } from '../../state/store.ts';
+import { AccountPage } from './AccountPage.tsx';
 import { TitleBar } from '../shell/TitleBar.tsx';
 import { formatRuleNumber } from '@rule-builder/core';
 import { HomePage } from './HomePage.tsx';
@@ -28,19 +32,22 @@ import { NewPage } from './NewPage.tsx';
 import { OpenPage } from './OpenPage.tsx';
 import { HelpPage } from './HelpPage.tsx';
 
-type PageKey = 'home' | 'new' | 'open' | 'info' | 'save' | 'export' | 'print' | 'help' | 'close';
+type PageKey =
+  'home' | 'new' | 'open' | 'info' | 'save' | 'export' | 'print' | 'help' | 'account' | 'close';
 
 type PageDef = {
   key: PageKey;
   icon: LucideIcon;
   label: string;
   needsProposal: boolean;
+  /** ログインしていなくても使える */
+  public?: boolean;
   /** まだ中身のないページ（書き出し・新旧対照表は Phase 6） */
   notReady?: boolean;
 };
 
 const PAGES: (PageDef | '-')[] = [
-  { key: 'home', icon: House, label: 'ホーム', needsProposal: false },
+  { key: 'home', icon: House, label: 'ホーム', needsProposal: false, public: true },
   { key: 'new', icon: FileText, label: '新規', needsProposal: false },
   { key: 'open', icon: FolderOpen, label: '開く', needsProposal: false },
   '-',
@@ -49,7 +56,8 @@ const PAGES: (PageDef | '-')[] = [
   { key: 'export', icon: Upload, label: '書き出し', needsProposal: true },
   { key: 'print', icon: Columns2, label: '新旧対照表・印刷', needsProposal: true },
   '-',
-  { key: 'help', icon: LifeBuoy, label: 'ヘルプ', needsProposal: false },
+  { key: 'help', icon: LifeBuoy, label: 'ヘルプ', needsProposal: false, public: true },
+  { key: 'account', icon: User, label: 'アカウント', needsProposal: false },
   { key: 'close', icon: X, label: '閉じる', needsProposal: true },
 ];
 
@@ -62,6 +70,8 @@ export function FileScreen() {
   const current = useApp((s) => s.current);
   const proposal = useApp((s) => s.proposal);
   const saveState = useApp((s) => s.saveState);
+  const authStatus = useAuth((s) => s.status);
+  const loggedIn = authStatus === 'user';
   // 改正案を開いていないときは、情報・保存などは押せない
   const hasProposal = !!proposal;
   const editable = entries.findIndex((e, i) => i >= Math.max(0, current) && e.op !== 'repeal');
@@ -89,8 +99,12 @@ export function FileScreen() {
     return () => window.removeEventListener('keydown', onKey);
   }, [backTo, navigate]);
 
+  const usable = (p: PageDef) =>
+    (loggedIn || !!p.public) && !(p.needsProposal && !hasProposal) && !p.notReady;
   const def = PAGES.find((p): p is PageDef => p !== '-' && p.key === page);
-  if (!isPage(page) || !def || (def.needsProposal && !hasProposal) || def.notReady) {
+  // ログインの確認が終わるまでは、ログインの要るページを開いたままにする（再読み込みでホームに飛ばないように）
+  if (authStatus === 'loading' && def && !def.public) return null;
+  if (!isPage(page) || !def || !usable(def)) {
     return <Navigate to="/file/home" replace />;
   }
   if (page === 'close') return null;
@@ -116,7 +130,7 @@ export function FileScreen() {
           {PAGES.map((p, i) => {
             if (p === '-') return <hr key={i} />;
             const Icon = p.icon;
-            if ((p.needsProposal && !hasProposal) || p.notReady) {
+            if (!usable(p)) {
               return (
                 <span
                   key={p.key}
@@ -151,6 +165,7 @@ export function FileScreen() {
           {page === 'export' && <ExportPage />}
           {page === 'print' && <PrintPage />}
           {page === 'help' && <HelpPage />}
+          {page === 'account' && <AccountPage />}
         </main>
       </div>
     </>

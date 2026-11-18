@@ -1,6 +1,7 @@
 // 紙面のエディタ。ポータルの見た目のまま、Word と同じ感覚で文言を書き換える。
 
 import Collaboration from '@tiptap/extension-collaboration';
+import CollaborationCaret from '@tiptap/extension-collaboration-caret';
 import { EditorContent, useEditor } from '@tiptap/react';
 import { articleSignature, listArticles, parseRule, parseRuleHref } from '@rule-builder/core';
 import { ExternalLink, Pencil, Unlink } from 'lucide-react';
@@ -14,6 +15,7 @@ import { refreshLint } from './lint.ts';
 import { getCommand } from '../commands/registry.ts';
 import { useCommandContext } from '../commands/useCommandContext.ts';
 import { LawTitle } from '../render/RuleView.tsx';
+import type { PeerUser } from '../state/session.ts';
 import { useApp, type OpenEntry } from '../state/store.ts';
 import { Menu, MiniToolbar, type MenuItem } from '../ui/common/Menu.tsx';
 import { bumpEditorVersion, editorHandlers, setActiveEditor } from './activeEditor.ts';
@@ -21,6 +23,20 @@ import { articleCursor, cursorLocation } from './commands.ts';
 import { bodyFromPM, type PMNode } from './convert.ts';
 import { RuleEditing } from './RuleEditing.ts';
 import { schemaExtensions } from './schema.ts';
+
+/** ほかの人のカーソル（名前の札つき）。札を押せる場所（タイトルバーのアイコン）から探せるよう data-uid を付ける */
+function renderCaret(user: PeerUser & { name: string; color: string }): HTMLElement {
+  const caret = document.createElement('span');
+  caret.className = 'collaboration-carets__caret';
+  caret.style.borderColor = user.color;
+  if (user.uid) caret.dataset.uid = user.uid;
+  const label = document.createElement('span');
+  label.className = 'collaboration-carets__label';
+  label.style.backgroundColor = user.color;
+  label.textContent = user.name;
+  caret.append(label);
+  return caret;
+}
 
 /** エディタの変更をモデルの写しに反映するまでの待ち時間 */
 const SYNC_DELAY_MS = 250;
@@ -61,6 +77,8 @@ export function RuleEditorView({
         : null,
     [entry.op, entry.baseMarkdown],
   );
+  // サーバーとつながっていれば、ほかの人のカーソルを出す（自分の名前・色は接続時に在席に載せてある）
+  const provider = useApp.getState().session?.provider ?? null;
   const editor = useEditor(
     {
       extensions: [
@@ -69,6 +87,15 @@ export function RuleEditorView({
           fragment: entry.fragment,
           yUndoOptions: { undoManager: entry.undo },
         }),
+        ...(provider
+          ? [
+              CollaborationCaret.configure({
+                provider,
+                user: provider.awareness.getLocalState()?.user as PeerUser,
+                render: renderCaret as (u: Record<string, unknown>) => HTMLElement,
+              }),
+            ]
+          : []),
         RuleEditing.configure({
           notify: showToast,
           getUndoManager: () => entry.undo,

@@ -1,0 +1,27 @@
+{
+  "name": "@rule-builder/server",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev -c wrangler.jsonc -c dev/opsbot-stub/wrangler.jsonc",
+    "types": "wrangler types --env-interface Env src/worker-configuration.d.ts",
+    "typecheck": "tsc -p tsconfig.json",
+    "test:integration": "vitest run -c vitest.integration.config.ts",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "deploy": "wrangler deploy --env=\"\"",
+    "deploy:staging": "wrangler deploy --env staging"
+  },
+  "devDependencies": {
+    "wrangler": "^4.164.0"
+  },
+  "dependencies": {
+    "@rule-builder/core": "*",
+    "hono": "^4.13.19",
+    "lib0": "^0.2.120",
+    "partyserver": "^0.5.10",
+    "y-partyserver": "^2.2.0",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.33"
+  }
+}

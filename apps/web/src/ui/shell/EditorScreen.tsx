@@ -13,6 +13,7 @@ import { layoutRule } from '../../render/layout.ts';
 import { RuleView } from '../../render/RuleView.tsx';
 import { useApp, type PaneKind } from '../../state/store.ts';
 import { Menu, type MenuItem } from '../common/Menu.tsx';
+import { RULES_REPO } from '../../github/rules.ts';
 import { staleEntries } from '../../state/actions.ts';
 import { OP_TAG } from '../file/InfoPage.tsx';
 import { CheckPane } from '../panes/CheckPane.tsx';
@@ -60,12 +61,35 @@ function Editor({ index }: { index: number }) {
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const proposal = ctx.app.proposal;
   const saveState = ctx.app.saveState;
-  const [stale, setStale] = useState<string[]>([]);
+  const [stale, setStale] = useState<{ sha: string; keys: string[] }>({ sha: '', keys: [] });
+  /** 閉じた警告（同じ版のあいだは出さない） */
+  const [dismissed, setDismissed] = useState<string | null>(null);
 
-  // 改正案を開いたとき、元にした版が今の main より古ければ知らせる（並行改正の見落としに気づくため）
+  // 元にした版が今の main より古ければ知らせる（F-45。並行改正の見落としに気づくため）。
+  // 開いたときと、編集中は5分ごと・画面に戻ったときに確かめ直す（main の SHA は5分間キャッシュする）
   useEffect(() => {
-    staleEntries().then(setStale, () => setStale([]));
-  }, [proposal?.id]);
+    let alive = true;
+    const check = () => {
+      if (document.visibilityState === 'hidden') return;
+      staleEntries().then(
+        (r) => alive && setStale(r),
+        () => {},
+      );
+    };
+    check();
+    const timer = setInterval(check, 5 * 60 * 1000);
+    document.addEventListener('visibilitychange', check);
+    return () => {
+      alive = false;
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', check);
+    };
+  }, [proposal?.id, entries.length]);
+
+  // いま開いているルールを在席に載せる（ほかの人がアイコンを押したときの移動先）
+  useEffect(() => {
+    ctx.app.session?.setActiveEntry(entry.key);
+  }, [ctx.app.session, entry.key]);
 
   // スマホでは開いたときにナビゲーションとリボンを畳む
   useEffect(() => {
@@ -229,13 +253,30 @@ function Editor({ index }: { index: number }) {
           />
         )}
         <main className="canvas" ref={canvasRef} aria-label="紙面">
-          {stale.includes(entry.key) && (
-            <div className="readbar warnbar" role="alert">
+          {stale.keys.includes(entry.key) && dismissed !== `${entry.key}@${stale.sha}` && (
+            <div className="ebanner-wrap" role="alert">
               <TriangleAlert className="i" aria-hidden="true" />
-              <b>この下書きの作成後にルールが更新されています</b>
-              <span className="muted">
-                同じルールを変える改正案がほかにないか確かめてください。
+              <span className="grow">
+                <b>公開中のルールが更新されました。</b>
+                この改正案は更新前の版（{entry.baseSha.slice(0, 7)}）をもとにしています。新しい版（
+                {stale.sha.slice(0, 7)}
+                ）の変更を取り込まずに発議すると、その変更が失われます。同じルールを変える改正案がほかにないかも確かめてください。
               </span>
+              <a
+                className="btn small"
+                href={`https://github.com/${RULES_REPO}/compare/${entry.baseSha}...${stale.sha}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                何が変わったか見る
+              </a>
+              <button
+                type="button"
+                className="btn small"
+                onClick={() => setDismissed(`${entry.key}@${stale.sha}`)}
+              >
+                閉じる
+              </button>
             </div>
           )}
           {entry.op === 'repeal' && (

@@ -1,4 +1,5 @@
-// 改正案の操作（作成・開く・下書きファイル・ルールの追加・番号の提案）。
+// 改正案の操作（作成・開く・下書きファイル・サーバーへの移行・ルールの追加・番号の提案）。
+// 運営者としてログインしていれば、開いた改正案はサーバーとつなぐ（同期・在席）。
 
 import {
   addEntry,
@@ -15,9 +16,40 @@ import {
 } from '@rule-builder/core';
 import * as Y from 'yjs';
 import { fetchMainSha, fetchRuleList, fetchRuleMarkdown, type RuleList } from '../github/rules.ts';
-import { listRecent, type RecentProposal } from '../storage/recent.ts';
-import { ProposalSession } from './session.ts';
+import { fetchProposals, type ServerProposal } from '../server/api.ts';
+import { listRecent, onServerIds, type RecentProposal } from '../storage/recent.ts';
+import { loadMe, useAuth, userColor } from './auth.ts';
+import { CLOSE_FORBIDDEN, CLOSE_REAUTH, ProposalSession } from './session.ts';
 import { useApp } from './store.ts';
+
+/** 運営者の判定をやり直す間隔の下限（接続が切れるたびに問い合わせないため） */
+const RECHECK_GAP_MS = 30_000;
+let lastRecheck = 0;
+
+/** ログイン中ならサーバーとつなぐ。接続が切られたら、運営者かどうかを確かめ直す */
+function attach(session: ProposalSession) {
+  const { status, user } = useAuth.getState();
+  if (status !== 'user' || !user) return;
+  session.connect({
+    uid: user.id,
+    name: user.name,
+    avatar: user.avatarUrl,
+    color: userColor(user.id),
+  });
+  session.onConnectionClose((code) => {
+    const now = Date.now();
+    const urgent = code === CLOSE_FORBIDDEN;
+    if (!urgent && (code === CLOSE_REAUTH || now - lastRecheck < RECHECK_GAP_MS)) return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+    lastRecheck = now;
+    void loadMe();
+  });
+}
+
+async function openWithServer(session: ProposalSession) {
+  attach(session);
+  await useApp.getState().openSession(session);
+}
 
 export type NewProposalInput = {
   amendingNumber: AmendingNumber;
@@ -33,14 +65,33 @@ export async function createProposal(
   const ydoc = createProposalDoc(input);
   if (first) addEntry(ydoc, first);
   const session = new ProposalSession(ydoc);
-  await useApp.getState().openSession(session);
+  await openWithServer(session);
   return session;
 }
 
-export async function openRecentProposal(id: string): Promise<void> {
+export class ProposalNotFound extends Error {}
+
+/**
+ * 改正案を開く。この端末の控えがあればすぐ開き、なければサーバーから届くのを待つ。
+ * 届かなければ（ない・つながらない） ProposalNotFound を投げる。
+ */
+export async function openProposal(id: string): Promise<void> {
   const current = useApp.getState().session;
   if (current?.id === id) return;
-  const session = await ProposalSession.load(id);
+  const session = new ProposalSession(new Y.Doc(), { id });
+  await session.whenLocalReady();
+  attach(session);
+  if (readProposalMeta(session.ydoc).id !== id) {
+    await session.whenSynced();
+    if (readProposalMeta(session.ydoc).id !== id) {
+      await session.destroy();
+      throw new ProposalNotFound(
+        useAuth.getState().status === 'user'
+          ? '改正案を開けませんでした。リンクが正しいか、通信の状態を確かめてください'
+          : '改正案を開くには、ログインしてください',
+      );
+    }
+  }
   await useApp.getState().openSession(session);
 }
 
@@ -51,15 +102,49 @@ export async function openDraftFile(text: string): Promise<'opened' | 'merged'> 
   const recent = await listRecent();
   if (recent.some((r) => r.id === id)) {
     const current = useApp.getState().session;
-    const session = current?.id === id ? current : await ProposalSession.load(id);
+    if (current?.id === id) {
+      Y.applyUpdate(current.ydoc, Y.encodeStateAsUpdate(incoming));
+      incoming.destroy();
+      useApp.getState().refresh();
+      return 'merged';
+    }
+    const session = await ProposalSession.load(id);
     Y.applyUpdate(session.ydoc, Y.encodeStateAsUpdate(incoming));
     incoming.destroy();
-    await useApp.getState().openSession(session);
-    useApp.getState().refresh();
+    await openWithServer(session);
     return 'merged';
   }
-  await useApp.getState().openSession(new ProposalSession(incoming));
+  await openWithServer(new ProposalSession(incoming));
   return 'opened';
+}
+
+/** このブラウザだけに控えてある改正案（サーバーの一覧にないもの） */
+export async function localOnlyProposals(server?: ServerProposal[]): Promise<RecentProposal[]> {
+  const [recent, list] = await Promise.all([listRecent(), server ?? fetchProposals()]);
+  const ids = new Set([...list.map((p) => p.id), ...onServerIds()]);
+  return recent.filter((r) => !ids.has(r.id));
+}
+
+/**
+ * このブラウザだけにある改正案をサーバーに移す（下書きファイルの読み込みと同じく、控えをサーバーの文書に合わせる）。
+ * 移せた件数を返す。開いている改正案はすでにつながっているので、送り終わるのを待つだけ。
+ */
+export async function migrateToServer(ids: string[]): Promise<number> {
+  let n = 0;
+  for (const id of ids) {
+    const current = useApp.getState().session;
+    if (current?.id === id) {
+      if (await current.flush()) n++;
+      continue;
+    }
+    const session = await ProposalSession.load(id);
+    attach(session);
+    session.touch();
+    const ok = await session.flush();
+    await session.destroy();
+    if (ok) n++;
+  }
+  return n;
 }
 
 /** 下書きファイル（.json）をダウンロードする */
@@ -149,7 +234,8 @@ export function newRuleDoc(meta: RuleMeta): RuleDoc {
 
 export type NumberSources = {
   remote: RuleList | null;
-  recent: RecentProposal[];
+  /** 改正ルール番号が使われている改正案（この端末の控えと、サーバー上の運営の改正案） */
+  recent: Pick<RecentProposal, 'amendingNumber'>[];
 };
 
 /**
@@ -196,23 +282,35 @@ export function suggestOrder(kind: RuleKind, src: NumberSources): number {
 
 /** 番号の提案に使う情報を集める（取得できなければ remote は null） */
 export async function loadNumberSources(): Promise<NumberSources> {
-  const [remote, recent] = await Promise.all([fetchRuleList().catch(() => null), listRecent()]);
-  return { remote, recent };
+  const [remote, recent, server] = await Promise.all([
+    fetchRuleList().catch(() => null),
+    listRecent(),
+    useAuth.getState().status === 'user' ? fetchProposals().catch(() => []) : [],
+  ]);
+  return {
+    remote,
+    recent: [
+      ...recent,
+      ...server.map((p) => ({
+        amendingNumber: p.amendingNumber as RecentProposal['amendingNumber'],
+      })),
+    ],
+  };
 }
 
-/** 改正の元にした版が、今の main と比べて古いか（ルールの中身が変わっているか） */
-export async function staleEntries(): Promise<string[]> {
+/** 改正の元にした版が、今の main と比べて古いルール（中身が変わっているもの）と、今の main の SHA */
+export async function staleEntries(): Promise<{ sha: string; keys: string[] }> {
   const { entries } = useApp.getState();
   const targets = entries.filter((e) => e.op !== 'create' && e.baseSha);
-  if (!targets.length) return [];
+  if (!targets.length) return { sha: '', keys: [] };
   const sha = await fetchMainSha();
   const list = await fetchRuleList();
-  const out: string[] = [];
+  const keys: string[] = [];
   for (const e of targets) {
     if (e.baseSha === sha) continue;
     const r = list.rules.find((x) => x.id === e.ruleId);
     const now = r ? await fetchRuleMarkdown(sha, r.path) : '';
-    if (now !== e.baseMarkdown) out.push(e.key);
+    if (now !== e.baseMarkdown) keys.push(e.key);
   }
-  return out;
+  return { sha, keys };
 }

@@ -1,14 +1,14 @@
-// 開く：場所の切り替え（最近使った改正案／公開中のルール／このデバイス）。
+// 開く：場所の切り替え（運営の改正案／公開中のルール／このデバイス）。
 
 import { DraftFileError, formatRuleNumber } from '@rule-builder/core';
-import { Cloud, FileText, FolderOpen, Search, type LucideIcon } from 'lucide-react';
+import { Cloud, FileText, FolderOpen, Search, Users, type LucideIcon } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { errorMessage, fetchRuleList, type RemoteRule, type RuleList } from '../../github/rules.ts';
 import { addAmendEntry, openDraftFile } from '../../state/actions.ts';
 import { useApp, type OpenLocation } from '../../state/store.ts';
 import { openDialog } from '../common/dialogs.tsx';
-import { RecentList } from './HomePage.tsx';
+import { ServerList, STATUS_LABEL } from './HomePage.tsx';
 import { openNewProposalDialog } from './NewProposalDialog.tsx';
 
 function Place({
@@ -51,12 +51,7 @@ export function OpenPage() {
       <h2>開く</h2>
       <div className="places">
         <div className="pl">
-          <Place
-            loc="recent"
-            icon={FileText}
-            label="最近使った改正案"
-            desc="このブラウザに保存されているもの"
-          />
+          <Place loc="server" icon={Users} label="運営の改正案" desc="サーバー上のすべての改正案" />
           <Place loc="remote" icon={Cloud} label="公開中のルール" desc="ds-craft/rules の最新版" />
           <Place
             loc="device"
@@ -66,11 +61,29 @@ export function OpenPage() {
           />
         </div>
         <div>
-          {loc === 'recent' && <RecentList />}
+          {loc === 'server' && <ServerProposals />}
           {loc === 'remote' && <RemoteRules />}
           {loc === 'device' && <DeviceDrop />}
         </div>
       </div>
+    </>
+  );
+}
+
+/** 運営の改正案（状態で絞り込み） */
+function ServerProposals() {
+  const [status, setStatus] = useState('all');
+  const chips: [string, string][] = [['all', 'すべて'], ...Object.entries(STATUS_LABEL)];
+  return (
+    <>
+      <div className="status-filter" role="group" aria-label="状態で絞り込む">
+        {chips.map(([k, label]) => (
+          <button key={k} type="button" aria-pressed={status === k} onClick={() => setStatus(k)}>
+            {label}
+          </button>
+        ))}
+      </div>
+      <ServerList status={status} />
     </>
   );
 }
@@ -266,7 +279,7 @@ function DeviceDrop() {
   const load = async (f: File) => {
     try {
       const r = await openDraftFile(await f.text());
-      showToast(r === 'merged' ? 'このブラウザの同じ改正案に取り込みました' : '下書きを開きました');
+      showToast(r === 'merged' ? 'この端末の同じ改正案に取り込みました' : '下書きを開きました');
       const { entries } = useApp.getState();
       void navigate(entries.length ? '/edit/0' : '/file/info');
     } catch (e) {

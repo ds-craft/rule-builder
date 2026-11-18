@@ -1,0 +1,69 @@
+// rule-builder のサーバー（Cloudflare Workers）。
+// 秘密情報（DISCORD_CLIENT_SECRET・SESSION_SECRET）は `wrangler secret put` で登録し、ここには書かない。
+// 手元では apps/server/.dev.vars に書く（.dev.vars.example を写す）。
+{
+  "$schema": "../../node_modules/wrangler/config-schema.json",
+  "name": "rule-builder-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "observability": { "enabled": true },
+
+  // サーバーは api.builder.ds2.uk、画面は builder.ds2.uk（GitHub Pages）。同じサイトなので Cookie は SameSite=Lax で届く
+  "routes": [{ "pattern": "api.builder.ds2.uk", "custom_domain": true }],
+  // *.workers.dev では公開しない（Cookie の届く範囲を api.builder.ds2.uk に限る）
+  "workers_dev": false,
+  "preview_urls": false,
+
+  "vars": {
+    "APP_ORIGIN": "https://builder.ds2.uk",
+    "API_ORIGIN": "https://api.builder.ds2.uk",
+    "DISCORD_CLIENT_ID": "1480980120133963916",
+  },
+
+  // 改正案の一覧・利用者・監査記録。database_id はリソース識別子で、秘密情報ではない
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "rule-builder",
+      "database_id": "6d715b46-4ab4-4474-8716-5002fea8e0c5",
+      "migrations_dir": "migrations",
+    },
+  ],
+
+  // 改正案1件＝1オブジェクト。Yjs の同期と保存（SQLite）を担う
+  "durable_objects": {
+    "bindings": [{ "name": "ProposalRoom", "class_name": "ProposalRoom" }],
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["ProposalRoom"] }],
+
+  // 運営者の判定は OpsBot を正とする（公開の URL からは呼べない RPC エントリポイント）
+  "services": [{ "binding": "OPSBOT", "service": "opsbot", "entrypoint": "RuleBuilderRpc" }],
+
+  "env": {
+    // ステージング：画面は staging.builder.ds2.uk（Workers の静的配信。.github/workflows/server.yml）
+    "staging": {
+      "name": "rule-builder-api-staging",
+      "routes": [{ "pattern": "api-staging.builder.ds2.uk", "custom_domain": true }],
+      "workers_dev": false,
+      "preview_urls": false,
+      "vars": {
+        "APP_ORIGIN": "https://staging.builder.ds2.uk",
+        "API_ORIGIN": "https://api-staging.builder.ds2.uk",
+        "DISCORD_CLIENT_ID": "1480980120133963916",
+      },
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "rule-builder-staging",
+          "database_id": "480e5b0a-0182-42c5-a473-73660b6a7a76",
+          "migrations_dir": "migrations",
+        },
+      ],
+      "durable_objects": {
+        "bindings": [{ "name": "ProposalRoom", "class_name": "ProposalRoom" }],
+      },
+      // OpsBot にはステージングがないため本番につなぐ（Phase 9 で呼ぶのは読み取りだけの getMemberStatus）
+      "services": [{ "binding": "OPSBOT", "service": "opsbot", "entrypoint": "RuleBuilderRpc" }],
+    },
+  },
+}

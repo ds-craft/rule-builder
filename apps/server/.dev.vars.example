@@ -1,0 +1,10 @@
+# 手元で `npm run dev -w apps/server` を動かすときの設定。このファイルを .dev.vars に写して値を入れる（.dev.vars は Git に入れない）。
+# Discord の OAuth2 のクライアントシークレット（OpsBot のアプリケーション）
+DISCORD_CLIENT_SECRET=
+# セッションの署名鍵（node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))" で作る）
+SESSION_SECRET=
+# 手元では画面を Vite（5173）、サーバーを wrangler（8787）で動かす
+APP_ORIGIN=http://localhost:5173
+API_ORIGIN=http://localhost:8787
+# Discord を通さずにログインできる開発用の入口（/auth/dev-login）。API_ORIGIN が localhost のときだけ有効
+ALLOW_DEV_LOGIN=true

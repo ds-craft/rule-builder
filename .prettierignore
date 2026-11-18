@@ -7,3 +7,5 @@ apps/web/src/styles/portal/
 docs/implementation-plan.md
 prototype/
 *.md
+.wrangler/
+apps/server/src/worker-configuration.d.ts

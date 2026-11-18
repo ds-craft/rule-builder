@@ -1,0 +1,258 @@
+/* Phase 9：ログイン・共同編集（タイトルバーの在席・共有・自分のアイコン、ログイン、知らせ、ほかの人のカーソル） */
+.av {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  flex: none;
+  border: 2px solid #fff;
+  line-height: 1;
+  object-fit: cover;
+  background: var(--g420);
+}
+.av.lg {
+  width: 56px;
+  height: 56px;
+  font-size: 24px;
+  border: 0;
+}
+.av.sm {
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  border: 0;
+}
+.titlebar .peers {
+  display: flex;
+  align-items: center;
+}
+.titlebar .peers button {
+  border: 0;
+  background: none;
+  padding: 0;
+  margin-left: -6px;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.titlebar .peers button:first-child {
+  margin-left: 0;
+}
+.titlebar .share {
+  background: #fff;
+  color: var(--blue-900);
+  border: 0;
+  border-radius: 16px;
+  padding: 3px 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.titlebar .share:hover {
+  background: var(--blue-50);
+}
+.titlebar .share svg.i,
+.titlebar .save svg.i {
+  width: 16px;
+  height: 16px;
+}
+.titlebar .me {
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.titlebar .save.offline {
+  background: rgba(255, 255, 255, 0.18);
+  border-radius: 10px;
+  padding: 0 8px;
+  opacity: 1;
+}
+.login {
+  max-width: 520px;
+  margin: 24px 0;
+}
+.btn.discord {
+  background: #5865f2;
+  border-color: #5865f2;
+  color: #fff;
+  font-size: 16px;
+  padding: 10px 20px;
+}
+.btn.discord:hover:not(:disabled) {
+  background: #4752c4;
+}
+.notice {
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin: 0 0 16px;
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  max-width: 760px;
+}
+.notice.err {
+  background: #fdeeee;
+  border: 1px solid #f3b9b9;
+}
+.notice.warn {
+  background: var(--warn-50);
+  border: 1px solid #e0c060;
+}
+.notice.info {
+  background: var(--blue-50);
+  border: 1px solid var(--blue-100);
+}
+.notice .grow,
+.ebanner-wrap .grow {
+  flex: 1;
+}
+.notice svg.i {
+  flex: none;
+  margin-top: 2px;
+}
+.who {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.acct {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.share-link {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 4px;
+}
+.share-link input {
+  flex: 1;
+  min-width: 0;
+  font-size: 13px;
+}
+.share-who {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+.share-who li {
+  margin-bottom: 4px;
+}
+.people {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+}
+.people li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 3px 0;
+}
+.status-filter {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 10px;
+  flex-wrap: wrap;
+}
+.status-filter button {
+  border: 1px solid var(--g420);
+  background: #fff;
+  border-radius: 14px;
+  padding: 1px 12px;
+  font-size: 13px;
+  cursor: pointer;
+}
+.status-filter button[aria-pressed='true'] {
+  background: var(--blue-50);
+  border-color: var(--blue);
+  color: var(--blue-900);
+  font-weight: 700;
+}
+/* 公開中のルールが更新されたとき（F-45）：紙面の上に貼りつける */
+.ebanner-wrap {
+  position: sticky;
+  top: -24px;
+  z-index: 6;
+  margin: -24px -16px 16px;
+  background: var(--warn-50);
+  border-bottom: 1px solid #e0c060;
+  padding: 6px 14px;
+  font-size: 13.5px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.ebanner-wrap a.btn {
+  text-decoration: none;
+}
+.loading-screen {
+  padding: 48px 16px;
+  text-align: center;
+}
+
+/* ほかの人のカーソルと名前の札（CollaborationCaret） */
+.rb-editor .collaboration-carets__caret {
+  position: relative;
+  margin-left: -1px;
+  margin-right: -1px;
+  border-left: 1px solid;
+  border-right: 1px solid;
+  word-break: normal;
+  pointer-events: none;
+}
+.rb-editor .collaboration-carets__label {
+  position: absolute;
+  top: -1.4em;
+  left: -1px;
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #fff;
+  padding: 0 5px;
+  border-radius: 3px 3px 3px 0;
+  white-space: nowrap;
+  user-select: none;
+  font-family: system-ui, sans-serif;
+}
+.rb-editor .collaboration-carets__caret.flash .collaboration-carets__label {
+  animation: rb-caret-flash 1s 2;
+}
+@keyframes rb-caret-flash {
+  50% {
+    transform: scale(1.25);
+  }
+}
+@media (max-width: 767px) {
+  .ebanner-wrap {
+    top: 0;
+    margin: 0 0 8px;
+  }
+  .titlebar .share span,
+  .titlebar .save .lbl {
+    display: none;
+  }
+  .titlebar .peers button:nth-child(n + 3) {
+    display: none;
+  }
+}
+@media print {
+  .titlebar,
+  .ebanner-wrap,
+  .collaboration-carets__caret {
+    display: none !important;
+  }
+}

@@ -7,6 +7,7 @@ import { MemoryRouter } from 'react-router';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AppRoutes } from './App.tsx';
 import { createProposal } from './state/actions.ts';
+import { useAuth } from './state/auth.ts';
 import { parseRule } from '@rule-builder/core';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -33,7 +34,21 @@ async function violations(container: Element): Promise<string[]> {
 }
 
 describe('アクセシビリティ（axe）', () => {
-  it('ファイル画面のホーム', async () => {
+  it('ファイル画面のホーム（ログイン前）', async () => {
+    useAuth.setState({ status: 'anon', user: null });
+    const { container } = render(
+      <MemoryRouter initialEntries={['/file/home']}>
+        <AppRoutes />
+      </MemoryRouter>,
+    );
+    expect(await violations(container)).toEqual([]);
+  });
+
+  it('ファイル画面のホーム（ログイン後）', async () => {
+    useAuth.setState({
+      status: 'user',
+      user: { id: '100000000000000001', name: '運営者A', avatarUrl: null, onLeave: false },
+    });
     const { container } = render(
       <MemoryRouter initialEntries={['/file/home']}>
         <AppRoutes />

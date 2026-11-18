@@ -27,7 +27,7 @@ const metaMap = (ydoc: Y.Doc) => ydoc.getMap<unknown>('meta');
 const entriesArray = (ydoc: Y.Doc) => ydoc.getArray<Y.Map<unknown>>('entries');
 
 export function newId(): string {
-  return globalThis.crypto.randomUUID();
+  return crypto.randomUUID();
 }
 
 // ---------- 改正案の情報 ----------
