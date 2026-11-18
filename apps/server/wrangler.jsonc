@@ -22,7 +22,7 @@
     "RULES_REPO": "ds-craft/rules",
     "PORTAL_ORIGIN": "https://www.ds2.uk",
     // rule-builder 専用の GitHub App（docs/github-app.md）。秘密鍵はシークレット GITHUB_APP_PRIVATE_KEY
-    "GITHUB_APP_ID": "",
+    "GITHUB_APP_ID": "5817684",
     // 発議・採決の RPC の相手："opsbot"（本物）か "sim"（模擬。本番の Discord に投票を出さない）
     "OPSBOT_PROPOSALS": "opsbot",
   },
@@ -59,7 +59,7 @@
         "DISCORD_CLIENT_ID": "1480980120133963916",
         "RULES_REPO": "ds-craft/rules-staging",
         "PORTAL_ORIGIN": "https://www.ds2.uk",
-        "GITHUB_APP_ID": "",
+        "GITHUB_APP_ID": "5817684",
         // ステージングは本番の OpsBot につながっているため、発議・採決は模擬の OpsBot で行う。
         // 参加者協議の長さも短くして（6分）、通しの確認をすぐできるようにする
         "OPSBOT_PROPOSALS": "sim",
