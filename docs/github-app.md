@@ -47,11 +47,17 @@ npx wrangler secret put GITHUB_APP_PRIVATE_KEY --env staging < ~/Downloads/ds-cr
 
 ## 4. ds-craft/rules の main を守る（ルールセット）
 
-App を作ったあと、ds-craft/rules の main にルールセットを設定する（10-7.2）。
+App を作ったあと、ds-craft/rules の main にルールセットを設定する（10-7.2）。設定済み（2026-11-18）。
 
-- 強制 push の禁止、ブランチの削除の禁止
-- main への直接の更新は、例外リストに入れたものだけに許す。例外リストは rule-builder の App と gorodrich（手作業のコミット用）
-- PR 必須・ステータスチェック必須・署名付きコミット必須はかけない（作者・日時を指定した自動反映のコミットが作れなくなるため）
+| ルールセット | ルール | 例外 |
+| --- | --- | --- |
+| main の強制 push・削除の禁止 | ブランチの削除の禁止、強制 push の禁止 | なし |
+| main の更新は rule-builder の自動反映と運営の手作業だけ | 更新の制限（Restrict updates） | rule-builder の App、組織の管理者（gorodrich。手作業のコミット用） |
+
+- ルールセットの例外は、そのルールセットの全部のルールに効く。1つにまとめると例外の側が強制 push もできてしまうので、2つに分けている。
+- ルールセットの例外には個人を直接は入れられないため、gorodrich は「組織の管理者」として入れている。
+- PR 必須・ステータスチェック必須・署名付きコミット必須はかけない（作者・日時を指定した自動反映のコミットが作れなくなるため）。
+- ds-craft/rules-staging にはかけない（試験で自由に戻せるようにする）。
 
 ## 仕組み
 
